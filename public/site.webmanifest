@@ -1,0 +1,14 @@
+{
+  "name": "Arcfinity — Construction & Design, Kerala",
+  "short_name": "Arcfinity",
+  "description": "Construction and design company in Thiruvananthapuram, Kerala.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#16181d",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/android-chrome-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

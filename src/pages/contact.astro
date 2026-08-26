@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import { site, links } from '../config/site';
+import { breadcrumbSchema } from '../utils/seo';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: '/contact' },
+];
+
+const addr = site.contact.address;
+const mapQuery = encodeURIComponent(
+  site.contact.serviceAreaOnly
+    ? `${addr.locality}, ${addr.region}`
+    : `${site.name}, ${addr.locality}, ${addr.region}`
+);
+const mapEmbed = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+---
+<BaseLayout
+  title="Contact Arcfinity"
+  description="Contact Arcfinity for a free construction consultation in Thiruvananthapuram and Kerala. Call, WhatsApp, email or send an enquiry — we reply promptly."
+  path="/contact"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="Contact"
+    title="Let's discuss your project"
+    intro="Tell us about your plot, your budget and your timeline. Get a free, no-obligation consultation and an itemised estimate — no pressure, no jargon."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <!-- Left: contact details -->
+      <div class="contact-info">
+        <h2 class="visually-hidden">Ways to reach us</h2>
+
+        <div class="contact-methods">
+          <a href={links.tel} class="method">
+            <span class="method__icon"><Icon name="phone" size={22} /></span>
+            <span class="method__body">
+              <span class="method__label">Call us</span>
+              <span class="method__value">{site.contact.phoneDisplay}</span>
+            </span>
+          </a>
+          <a href={links.whatsapp()} class="method" rel="nofollow noopener" target="_blank">
+            <span class="method__icon method__icon--wa"><Icon name="whatsapp" size={22} /></span>
+            <span class="method__body">
+              <span class="method__label">WhatsApp</span>
+              <span class="method__value">Chat with us now</span>
+            </span>
+          </a>
+          <a href={links.mailto} class="method">
+            <span class="method__icon"><Icon name="mail" size={22} /></span>
+            <span class="method__body">
+              <span class="method__label">Email</span>
+              <span class="method__value">{site.contact.email}</span>
+            </span>
+          </a>
+          <a href={site.contact.googleBusinessProfile} class="method" rel="noopener" target="_blank">
+            <span class="method__icon"><Icon name="google" size={22} /></span>
+            <span class="method__body">
+              <span class="method__label">Google Business</span>
+              <span class="method__value">View our profile</span>
+            </span>
+          </a>
+        </div>
+
+        <dl class="contact-details">
+          {!site.contact.serviceAreaOnly && (
+            <div>
+              <dt><Icon name="pin" size={18} /> Address</dt>
+              <dd>{addr.streetAddress}, {addr.locality}, {addr.region} {addr.postalCode}</dd>
+            </div>
+          )}
+          <div>
+            <dt><Icon name="compass" size={18} /> Service area</dt>
+            <dd>{site.serviceAreas.map((a) => a.name).join(', ')} & nearby Kerala</dd>
+          </div>
+          <div>
+            <dt><Icon name="clock" size={18} /> Business hours</dt>
+            <dd>{site.hoursHuman}</dd>
+          </div>
+        </dl>
+
+        <a href={site.contact.directionsUrl} class="btn btn--outline" rel="noopener" target="_blank">
+          <Icon name="pin" size={18} /> Get directions
+        </a>
+
+        <!-- Lazy-loaded map: no iframe until the user asks for it -->
+        <div class="map" id="map">
+          <button class="map__preview" id="map-load" aria-label="Load interactive map">
+            <span class="map__lines" aria-hidden="true"></span>
+            <span class="map__cta"><Icon name="pin" size={20} /> Load interactive map</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="contact-form-wrap">
+        <h2>Send an enquiry</h2>
+        <p class="text-muted">We typically respond within one business day.</p>
+        <LeadForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ mapEmbed }}>
+  const btn = document.getElementById('map-load');
+  btn?.addEventListener('click', () => {
+    const wrap = document.getElementById('map');
+    if (!wrap) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = mapEmbed;
+    iframe.title = 'Map of Arcfinity service area';
+    iframe.loading = 'lazy';
+    iframe.style.cssText = 'width:100%;height:100%;border:0;';
+    iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    wrap.innerHTML = '';
+    wrap.appendChild(iframe);
+  });
+</script>
+
+<style>
+  .contact-grid { display: grid; gap: 3rem; align-items: start; }
+  .contact-methods { display: grid; gap: 0.75rem; grid-template-columns: 1fr; }
+  .method { display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.1rem; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); text-decoration: none; color: inherit; transition: border-color 0.15s var(--ease), transform 0.15s var(--ease); }
+  .method:hover { border-color: var(--clay); transform: translateY(-2px); }
+  .method__icon { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: var(--radius); background: var(--clay-tint); color: var(--clay-deep); flex: none; }
+  .method__icon--wa { background: #e4f6ea; color: #178a43; }
+  .method__body { display: flex; flex-direction: column; }
+  .method__label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-display); }
+  .method__value { font-family: var(--font-display); font-weight: 600; }
+
+  .contact-details { margin: 2rem 0 1.5rem; display: grid; gap: 1.2rem; }
+  .contact-details dt { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-family: var(--font-display); }
+  .contact-details dt :global(svg) { color: var(--clay); }
+  .contact-details dd { margin: 0.35rem 0 0; }
+
+  .map { margin-top: 1.75rem; aspect-ratio: 16/10; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); }
+  .map__preview { position: relative; width: 100%; height: 100%; border: none; cursor: pointer; background: linear-gradient(160deg, var(--paper-2), #e7e1d7); display: flex; align-items: center; justify-content: center; }
+  .map__lines { position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg, transparent 0 39px, rgba(22,24,29,0.06) 39px 40px), repeating-linear-gradient(90deg, transparent 0 39px, rgba(22,24,29,0.06) 39px 40px); }
+  .map__cta { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--ink); color: var(--on-dark); padding: 0.75rem 1.25rem; border-radius: var(--radius-pill); font-family: var(--font-display); font-weight: 500; }
+  .map__cta :global(svg) { color: var(--brass); }
+
+  .contact-form-wrap h2 { font-size: var(--step-2); }
+  .contact-form-wrap > .text-muted { margin: 0.4rem 0 1.5rem; }
+
+  @media (min-width: 500px) { .contact-methods { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 980px) { .contact-grid { grid-template-columns: 0.95fr 1.05fr; gap: 4rem; } }
+</style>

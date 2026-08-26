@@ -1,0 +1,112 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { breadcrumbSchema, articleSchema, faqSchema } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const allPosts = await getCollection('blog');
+const related = d.related
+  .map((slug) => allPosts.find((p) => p.id === slug))
+  .filter(Boolean)
+  .slice(0, 3);
+
+const fmt = (dt: Date) => dt.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Resources', path: '/blog' },
+  { name: d.title, path: `/blog/${entry.id}` },
+];
+
+const schema = [
+  breadcrumbSchema(crumbs),
+  articleSchema({
+    title: d.title,
+    description: d.description,
+    path: `/blog/${entry.id}`,
+    datePublished: d.publishDate.toISOString(),
+    dateModified: (d.updatedDate ?? d.publishDate).toISOString(),
+  }),
+];
+if (d.faqs.length) schema.push(faqSchema(d.faqs.map((f) => ({ q: f.q, a: f.a.replace(/<[^>]+>/g, '') }))));
+---
+<BaseLayout
+  title={d.metaTitle ?? d.title}
+  description={d.description}
+  path={`/blog/${entry.id}`}
+  type="article"
+  publishedTime={d.publishDate.toISOString()}
+  modifiedTime={(d.updatedDate ?? d.publishDate).toISOString()}
+  schema={schema}
+>
+  <div class="container article-top">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  <article class="section section--tight">
+    <div class="container container--narrow">
+      <header class="article-head">
+        <span class="badge">{d.category}</span>
+        <h1>{d.title}</h1>
+        <p class="article-meta">
+          By {d.author} · <time datetime={d.publishDate.toISOString()}>{fmt(d.publishDate)}</time>
+          {d.updatedDate && <span> · Updated {fmt(d.updatedDate)}</span>}
+        </p>
+      </header>
+
+      <div class="prose article-body">
+        <Content />
+      </div>
+
+      {d.faqs.length > 0 && (
+        <div class="article-faq">
+          <Faq items={d.faqs} heading="Frequently asked questions" />
+        </div>
+      )}
+
+      {related.length > 0 && (
+        <nav class="article-related" aria-label="Related guides">
+          <h2>Related guides</h2>
+          <ul>
+            {related.map((p) => p && (
+              <li>
+                <a href={`/blog/${p.id}`}>
+                  <span>{p.data.title}</span>
+                  <Icon name="arrowUpRight" size={16} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+  </article>
+
+  <CtaBand title="Planning a project in Kerala?" text="Put these ideas into practice. Get a free, itemised consultation with the Arcfinity team." />
+</BaseLayout>
+
+<style>
+  .article-top { padding-top: 1.5rem; }
+  .article-head { margin-bottom: 2rem; }
+  .article-head h1 { margin: 0.8rem 0 0.6rem; font-size: var(--step-4); }
+  .article-meta { color: var(--muted); font-size: 0.92rem; }
+  .article-body { margin-inline: 0; }
+  .article-faq { max-width: var(--container-narrow); margin-top: 3rem; }
+  .article-related { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .article-related h2 { font-size: var(--step-1); margin-bottom: 1rem; }
+  .article-related ul { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+  .article-related a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1.1rem; background: var(--paper-2); border-radius: var(--radius); text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 500; }
+  .article-related a:hover { background: var(--clay-tint); color: var(--clay-deep); }
+</style>

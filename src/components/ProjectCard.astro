@@ -1,0 +1,55 @@
+---
+import Placeholder from './Placeholder.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  slug: string;
+  title: string;
+  category: string;
+  location: string;
+  area?: string;
+  status?: string;
+  seed?: number;
+  /** Real image path (from /public or imported). When absent, a placeholder shows. */
+  image?: string;
+  imageAlt?: string;
+}
+const { slug, title, category, location, area, status, seed = 1, image, imageAlt } = Astro.props;
+---
+<a href={`/projects/${slug}`} class="project-card">
+  <div class="project-card__media">
+    {
+      image ? (
+        <img src={image} alt={imageAlt ?? `${title} — ${category} project in ${location}`}
+          width="800" height="500" loading="lazy" decoding="async" />
+      ) : (
+        <Placeholder seed={seed} ratio="16/10" label={`${title} — ${category}`} />
+      )
+    }
+    <span class="project-card__cat badge">{category}</span>
+    {status && <span class="project-card__status">{status}</span>}
+  </div>
+  <div class="project-card__body">
+    <h3 class="project-card__title">{title}</h3>
+    <p class="project-card__meta">
+      <Icon name="pin" size={15} /> {location}{area ? ` · ${area}` : ''}
+    </p>
+  </div>
+</a>
+
+<style>
+  .project-card { display: block; text-decoration: none; color: inherit; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); background: var(--white); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+  .project-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-2); }
+  .project-card__media { position: relative; }
+  .project-card__media img { width: 100%; height: auto; aspect-ratio: 16/10; object-fit: cover; }
+  .project-card__cat { position: absolute; top: 0.75rem; left: 0.75rem; }
+  .project-card__status {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    background: rgba(22,24,29,0.82); color: #fff; font-size: 0.72rem;
+    font-family: var(--font-display); padding: 0.25rem 0.6rem; border-radius: var(--radius-pill);
+  }
+  .project-card__body { padding: 1.1rem 1.2rem 1.3rem; }
+  .project-card__title { font-size: var(--step-1); }
+  .project-card__meta { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+  .project-card__meta :global(svg) { color: var(--clay); flex: none; }
+</style>

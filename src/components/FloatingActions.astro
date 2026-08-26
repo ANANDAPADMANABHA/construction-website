@@ -1,0 +1,71 @@
+---
+/**
+ * Sticky mobile action bar: click-to-call + WhatsApp.
+ * Pure links (no third-party widget) so it costs ~0 to performance.
+ * Hidden on ≥960px where the header CTAs are visible.
+ */
+import { site, links } from '../config/site';
+import Icon from './Icon.astro';
+---
+<div class="floating-actions" role="region" aria-label="Quick contact">
+  <a href={links.tel} class="fa-btn fa-btn--call" aria-label={`Call ${site.name}`}>
+    <Icon name="phone" size={20} />
+    <span>Call</span>
+  </a>
+  <a
+    href={links.whatsapp()}
+    class="fa-btn fa-btn--wa"
+    rel="nofollow noopener"
+    target="_blank"
+    aria-label="Chat with Arcfinity on WhatsApp"
+  >
+    <Icon name="whatsapp" size={20} />
+    <span>WhatsApp</span>
+  </a>
+  <a href="/contact" class="fa-btn fa-btn--quote" aria-label="Request a quote">
+    <Icon name="chat" size={20} />
+    <span>Enquire</span>
+  </a>
+</div>
+
+<style>
+  .floating-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--ink);
+    border-top: 1px solid var(--on-dark-line);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .fa-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    min-height: 3.5rem;
+    padding: 0.5rem;
+    color: var(--on-dark);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .fa-btn + .fa-btn { border-left: 1px solid var(--on-dark-line); }
+  .fa-btn--call { color: #fff; }
+  .fa-btn--wa :global(svg) { color: #48d17b; }
+  .fa-btn--quote :global(svg) { color: var(--brass); }
+  .fa-btn:active { background: var(--ink-soft); }
+
+  /* Keep page content clear of the bar on mobile */
+  @media (max-width: 959px) {
+    :global(body) { padding-bottom: 3.5rem; }
+  }
+  @media (min-width: 960px) {
+    .floating-actions { display: none; }
+  }
+</style>

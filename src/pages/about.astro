@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { commitments } from '../config/testimonials';
+import { breadcrumbSchema } from '../utils/seo';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'About', path: '/about' },
+];
+
+const values = [
+  { icon: 'target', title: 'Engineering first', text: 'We treat every building as engineering, not decoration — designed for Kerala’s climate and built to last.' },
+  { icon: 'layers', title: 'Radical transparency', text: 'Itemised costing, written agreements and honest updates. You always know where your project and money stand.' },
+  { icon: 'handshake', title: 'Single accountability', text: 'Design, approvals, structure and finishing under one team. One point of contact owns the result.' },
+  { icon: 'leaf', title: 'Built for generations', text: 'The arc of good architecture and the infinity of long-term value — homes meant to serve families for decades.' },
+];
+---
+<BaseLayout
+  title="About Arcfinity"
+  description="Arcfinity is a construction and design company in Thiruvananthapuram, Kerala, built on engineering rigour, transparent costing and single-team accountability from design to handover."
+  path="/about"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="About"
+    title="Architecture with an arc. Value without end."
+    intro="Arcfinity brings design, engineering and construction together into one accountable team — so building with us feels less like managing chaos and more like watching a plan come true."
+    crumbs={crumbs}
+  />
+
+  <!-- Story -->
+  <section class="section">
+    <div class="container about-story">
+      <div class="prose">
+        <p class="eyebrow">Our story</p>
+        <h2>Why Arcfinity exists</h2>
+        <p>
+          Most people who build in Kerala describe the same frustrations: unclear
+          costs, disconnected contractors, and no single person accountable when
+          something goes wrong. Arcfinity was created to fix exactly that — to make
+          building a home or commercial space feel structured, transparent and
+          genuinely well-engineered.
+        </p>
+        <p>
+          The name says it plainly. The <strong>arc</strong> stands for architecture,
+          structure and progress — the movement of an idea from a drawing into
+          something real. <strong>Infinity</strong> stands for the long view: continuity,
+          endless possibility, and buildings meant to serve families for
+          generations. Together, they describe how we work — thoughtful design,
+          sound engineering, and value that lasts.
+        </p>
+      </div>
+      <div class="about-media" aria-hidden="true">
+        <Placeholder seed={4} ratio="3/4" label="Arcfinity — architectural craft" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission / Vision -->
+  <section class="section section--paper2">
+    <div class="container">
+      <div class="mv">
+        <div class="mv__card">
+          <span class="mv__icon"><Icon name="target" size={26} /></span>
+          <h2>Our mission</h2>
+          <p>To make building in Kerala transparent and dependable — delivering well-designed, soundly engineered spaces through one accountable team, with costing and communication our clients can trust.</p>
+        </div>
+        <div class="mv__card">
+          <span class="mv__icon"><Icon name="eye" size={26} /></span>
+          <h2>Our vision</h2>
+          <p>To be the region’s most trusted name for design-and-build — known not for the biggest claims, but for homes and spaces that stand the test of time and clients who recommend us without hesitation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">What we stand for</p>
+        <h2>The principles behind every project</h2>
+      </div>
+      <div class="grid grid-4">
+        {values.map((v) => (
+          <div class="value">
+            <span class="value__icon"><Icon name={v.icon} size={24} /></span>
+            <h3>{v.title}</h3>
+            <p>{v.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Approach / commitments -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">How we deliver</p>
+        <h2>Our commitment to every client</h2>
+        <p>These aren’t slogans — they’re how the company is structured to work.</p>
+      </div>
+      <div class="grid grid-4">
+        {commitments.map((c) => (
+          <div class="commit">
+            <span class="commit__icon"><Icon name={c.icon} size={24} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team (placeholder, honest) -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Our team</p>
+        <h2>The people who build with you</h2>
+        <p>Add your real team members, roles and photographs here. Genuine faces and names are one of the strongest trust signals a construction company can offer.</p>
+      </div>
+      <div class="team-note">
+        <Icon name="users" size={20} />
+        <p><strong>Editor note:</strong> Replace this block with real team profiles (name, role, short bio, photo). Do not use stock photos as team members.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .about-story { display: grid; gap: 2.5rem; align-items: center; }
+  .about-media :global(.ph) { border-radius: var(--radius-lg); max-width: 24rem; margin-inline: auto; }
+  @media (min-width: 900px) { .about-story { grid-template-columns: 1.4fr 0.9fr; gap: 3.5rem; } }
+
+  .mv { display: grid; gap: 1.5rem; }
+  .mv__card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 2rem; }
+  .mv__icon { display: inline-flex; color: var(--clay); margin-bottom: 1rem; }
+  .mv__card h2 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+  .mv__card p { color: var(--muted); }
+  @media (min-width: 800px) { .mv { grid-template-columns: 1fr 1fr; } }
+
+  .value__icon, .commit__icon { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: var(--radius); margin-bottom: 0.9rem; }
+  .value__icon { background: var(--clay-tint); color: var(--clay-deep); }
+  .value h3 { font-size: var(--step-1); margin-bottom: 0.4rem; }
+  .value p { color: var(--muted); font-size: 0.95rem; }
+
+  .commit__icon { background: rgba(166,138,75,0.16); color: var(--brass); }
+  .commit h3 { font-size: var(--step-1); color: var(--on-dark); margin-bottom: 0.4rem; }
+  .commit p { color: var(--on-dark-muted); font-size: 0.95rem; }
+
+  .team-note { display: flex; gap: 0.75rem; align-items: flex-start; background: var(--paper-2); border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
+  .team-note :global(svg) { color: var(--clay); flex: none; margin-top: 3px; }
+  .team-note p { color: var(--muted); }
+</style>

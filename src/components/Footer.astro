@@ -1,0 +1,150 @@
+---
+import { site, links } from '../config/site';
+import { footerServices, footerCompany, footerLegal } from '../config/nav';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+const areas = site.serviceAreas.map((a) => a.name).join(' · ');
+---
+<footer class="site-footer section--dark">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" aria-label={`${site.name} — home`}><Logo /></a>
+        <p>{site.shortDescription}</p>
+        <div class="footer-socials">
+          {
+            site.socials.map((s) => (
+              <a href={s.href} aria-label={s.label} rel="noopener" target="_blank">
+                <Icon name={s.icon} size={20} />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <nav class="footer-col" aria-label="Services">
+        <h2 class="footer-col__title">Services</h2>
+        <ul>
+          {footerServices.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Company">
+        <h2 class="footer-col__title">Company</h2>
+        <ul>
+          {footerCompany.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer-col footer-contact">
+        <h2 class="footer-col__title">Get in touch</h2>
+        <ul class="footer-contact__list">
+          <li>
+            <Icon name="phone" size={18} />
+            <a href={links.tel}>{site.contact.phoneDisplay}</a>
+          </li>
+          <li>
+            <Icon name="whatsapp" size={18} />
+            <a href={links.whatsapp()} rel="nofollow noopener" target="_blank">WhatsApp Arcfinity</a>
+          </li>
+          <li>
+            <Icon name="mail" size={18} />
+            <a href={links.mailto}>{site.contact.email}</a>
+          </li>
+          {
+            !site.contact.serviceAreaOnly && (
+              <li>
+                <Icon name="pin" size={18} />
+                <span>
+                  {site.contact.address.streetAddress}, {site.contact.address.locality},{' '}
+                  {site.contact.address.region} {site.contact.address.postalCode}
+                </span>
+              </li>
+            )
+          }
+          <li>
+            <Icon name="clock" size={18} />
+            <span>{site.hoursHuman}</span>
+          </li>
+          <li>
+            <Icon name="google" size={18} />
+            <a href={site.contact.googleBusinessProfile} rel="noopener" target="_blank">Google Business Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-areas">
+      <span>Serving:</span> {areas} and surrounding areas in Kerala.
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {year} {site.legalName}. All rights reserved.</p>
+      <ul class="footer-legal">
+        {footerLegal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding-block: clamp(3rem, 6vw, 5rem) 2rem; }
+  .footer-top {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--on-dark-line);
+  }
+  .footer-brand p { color: var(--on-dark-muted); margin-top: 1rem; max-width: 34ch; font-size: 0.96rem; }
+  .footer-socials { display: flex; gap: 0.5rem; margin-top: 1.2rem; }
+  .footer-socials a {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.5rem; height: 2.5rem;
+    border: 1px solid var(--on-dark-line); border-radius: var(--radius);
+    color: var(--on-dark);
+  }
+  .footer-socials a:hover { border-color: var(--brass); color: var(--brass); }
+
+  .footer-col__title {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 1rem;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+  .footer-col a { color: var(--on-dark-muted); text-decoration: none; font-size: 0.96rem; }
+  .footer-col a:hover { color: var(--on-dark); }
+
+  .footer-contact__list li { display: flex; align-items: flex-start; gap: 0.6rem; color: var(--on-dark-muted); font-size: 0.96rem; }
+  .footer-contact__list :global(svg) { flex: none; margin-top: 2px; color: var(--brass); }
+
+  .footer-areas {
+    padding-block: 1.5rem;
+    color: var(--on-dark-muted);
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--on-dark-line);
+  }
+  .footer-areas span { color: var(--on-dark); font-weight: 600; }
+
+  .footer-bottom {
+    display: flex; flex-wrap: wrap; gap: 1rem;
+    justify-content: space-between; align-items: center;
+    padding-top: 1.5rem;
+    color: var(--on-dark-muted); font-size: 0.9rem;
+  }
+  .footer-legal { list-style: none; display: flex; gap: 1.25rem; margin: 0; padding: 0; }
+  .footer-legal a { color: var(--on-dark-muted); text-decoration: none; }
+  .footer-legal a:hover { color: var(--on-dark); }
+
+  @media (min-width: 620px) {
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 960px) {
+    .footer-top { grid-template-columns: 1.6fr 1fr 1fr 1.4fr; gap: 3rem; }
+  }
+</style>

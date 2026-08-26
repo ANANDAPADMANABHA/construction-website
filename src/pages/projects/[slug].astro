@@ -1,0 +1,150 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { breadcrumbSchema } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const more = all.filter((p) => p.id !== entry.id && p.data.category === d.category).slice(0, 3);
+const moreFinal = more.length ? more : all.filter((p) => p.id !== entry.id).slice(0, 3);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Projects', path: '/projects' },
+  { name: d.title, path: `/projects/${entry.id}` },
+];
+
+const facts = [
+  { icon: 'building', label: 'Type', value: d.category },
+  { icon: 'pin', label: 'Location', value: d.location },
+  ...(d.area ? [{ icon: 'ruler', label: 'Area', value: d.area }] : []),
+  { icon: 'check', label: 'Status', value: d.status },
+  ...(d.completedDate ? [{ icon: 'clock', label: 'Completed', value: String(d.completedDate) }] : []),
+];
+---
+<BaseLayout
+  title={d.metaTitle ?? d.title}
+  description={d.description}
+  path={`/projects/${entry.id}`}
+  type="article"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <div class="container project-top">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  <article class="section section--tight">
+    <div class="container">
+      <header class="project-head">
+        <span class="badge">{d.category}</span>
+        <h1>{d.title}</h1>
+        <p class="project-head__loc"><Icon name="pin" size={18} /> {d.location}</p>
+      </header>
+
+      <div class="project-hero">
+        {d.images.length > 0 ? (
+          <img src={d.images[0].src} alt={d.images[0].alt} width="1200" height="750" loading="eager" fetchpriority="high" decoding="async" />
+        ) : (
+          <Placeholder seed={d.seed} ratio="16/9" label={`${d.title} — ${d.category}`} />
+        )}
+      </div>
+
+      <div class="project-grid">
+        <div class="project-content prose">
+          <Content />
+
+          {d.services.length > 0 && (
+            <div class="project-services">
+              <h2>Services provided</h2>
+              <ul>
+                {d.services.map((s) => <li><Icon name="check" size={16} /> {s}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {d.images.length > 1 && (
+            <div class="project-gallery">
+              {d.images.slice(1).map((img) => (
+                <img src={img.src} alt={img.alt} width="800" height="600" loading="lazy" decoding="async" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <aside class="project-facts">
+          <h2 class="visually-hidden">Project details</h2>
+          <dl>
+            {facts.map((f) => (
+              <div class="fact">
+                <dt><Icon name={f.icon} size={16} /> {f.label}</dt>
+                <dd>{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <a href="/contact" class="btn btn--primary btn--block">Start a similar project</a>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  {moreFinal.length > 0 && (
+    <section class="section section--paper2">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">More work</p><h2>Other projects</h2></div>
+        <div class="grid grid-3">
+          {moreFinal.map((p) => (
+            <ProjectCard slug={p.id} title={p.data.title} category={p.data.category}
+              location={p.data.location} area={p.data.area} status={p.data.status} seed={p.data.seed} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .project-top { padding-top: 1.5rem; }
+  .project-head { margin-bottom: 1.5rem; }
+  .project-head h1 { margin: 0.7rem 0 0.5rem; font-size: var(--step-4); }
+  .project-head__loc { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+  .project-head__loc :global(svg) { color: var(--clay); }
+  .project-hero { border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 2.5rem; }
+  .project-hero img { width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; }
+
+  .project-grid { display: grid; gap: 2.5rem; align-items: start; }
+  .project-services { margin-top: 2rem; }
+  .project-services h2 { font-size: var(--step-1); margin-bottom: 0.8rem; }
+  .project-services ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .project-services li { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--paper-2); padding: 0.5rem 0.9rem; border-radius: var(--radius-pill); font-size: 0.9rem; font-family: var(--font-display); }
+  .project-services :global(svg) { color: var(--clay); }
+  .project-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .project-gallery img { border-radius: var(--radius-lg); }
+
+  .project-facts { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .project-facts dl { margin: 0 0 1.4rem; }
+  .fact { padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+  .fact:last-of-type { border-bottom: none; }
+  .fact dt { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--muted); font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.06em; }
+  .fact dt :global(svg) { color: var(--clay); }
+  .fact dd { margin: 0.3rem 0 0; font-weight: 500; font-size: 1.05rem; }
+
+  @media (min-width: 980px) {
+    .project-grid { grid-template-columns: 1.6fr 0.9fr; gap: 3.5rem; }
+    .project-facts { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+  }
+</style>

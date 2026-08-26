@@ -1,0 +1,223 @@
+---
+/**
+ * Enquiry / lead form.
+ *
+ * Portability: set `endpoint` to a real form backend (Netlify Forms, Formspree,
+ * a Vercel/Cloudflare function, etc.). If left empty, the form gracefully falls
+ * back to opening a prefilled WhatsApp chat, so it works on any static host with
+ * no backend at all.
+ *
+ * Spam protection (no third-party / no CAPTCHA):
+ *  - Honeypot field (`company`) hidden from humans; bots fill it.
+ *  - Time trap: submissions faster than 3s are rejected.
+ * For higher volume, add a server-side check (hCaptcha/Turnstile) at the endpoint.
+ */
+import { site, links } from '../config/site';
+import { projectTypes } from '../config/nav';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** Real backend URL. Empty string => WhatsApp fallback. */
+  endpoint?: string;
+  compact?: boolean;
+}
+const { endpoint = '', compact = false } = Astro.props;
+const wa = site.contact.whatsapp;
+---
+<form
+  class={`lead-form ${compact ? 'lead-form--compact' : ''}`}
+  id="lead-form"
+  method="POST"
+  action={endpoint || '#'}
+  data-endpoint={endpoint}
+  data-wa={wa}
+  novalidate
+>
+  <!-- Honeypot: must stay empty. Hidden from users & assistive tech. -->
+  <div class="hp" aria-hidden="true">
+    <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+  </div>
+  <input type="hidden" name="_ts" id="lf-ts" value="" />
+  <input type="hidden" name="_subject" value="New enquiry from Arcfinity website" />
+
+  <div class="lead-form__grid">
+    <div class="field">
+      <label for="lf-name">Name <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-name" name="name" type="text" autocomplete="name" required
+        aria-required="true" placeholder="Your full name" />
+    </div>
+
+    <div class="field">
+      <label for="lf-phone">Phone <span class="req" aria-hidden="true">*</span></label>
+      <input id="lf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required
+        aria-required="true" placeholder="e.g. +91 98470 00000"
+        pattern="[0-9+\-\s()]{7,}" />
+    </div>
+
+    <div class="field">
+      <label for="lf-email">Email</label>
+      <input id="lf-email" name="email" type="email" autocomplete="email"
+        placeholder="you@example.com" />
+    </div>
+
+    <div class="field">
+      <label for="lf-location">Location</label>
+      <input id="lf-location" name="location" type="text" autocomplete="address-level2"
+        placeholder="e.g. Neyyattinkara, Trivandrum" />
+    </div>
+
+    <div class="field">
+      <label for="lf-type">Project type</label>
+      <select id="lf-type" name="project_type">
+        <option value="">Select a service…</option>
+        {projectTypes.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="lf-area">Approximate area (sq.ft)</label>
+      <input id="lf-area" name="area" type="text" inputmode="numeric"
+        placeholder="e.g. 1800" />
+    </div>
+
+    <div class="field field--full">
+      <label for="lf-message">Message</label>
+      <textarea id="lf-message" name="message" rows="4"
+        placeholder="Tell us about your plot, budget range and timeline."></textarea>
+    </div>
+  </div>
+
+  <div class="lead-form__foot">
+    <button type="submit" class="btn btn--primary">
+      Get a Free Consultation
+    </button>
+    <a href={links.whatsapp()} class="btn btn--whatsapp" rel="nofollow noopener" target="_blank">
+      <Icon name="whatsapp" size={18} /> WhatsApp Instead
+    </a>
+  </div>
+
+  <p class="lead-form__note">
+    By submitting, you agree to be contacted about your enquiry. We never share your details.
+    See our <a href="/privacy-policy">Privacy Policy</a>.
+  </p>
+
+  <p class="lead-form__status" id="lf-status" role="status" aria-live="polite" hidden></p>
+</form>
+
+<style>
+  .lead-form { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.25rem, 3vw, 2rem); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .lead-form__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.1rem; }
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .field--full { grid-column: 1 / -1; }
+  label { font-family: var(--font-display); font-weight: 500; font-size: 0.9rem; color: var(--ink); }
+  .req { color: var(--clay); }
+  input, select, textarea {
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 0.75rem 0.85rem;
+    width: 100%;
+    min-height: 3rem;
+    transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  }
+  textarea { min-height: auto; resize: vertical; }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--clay);
+    box-shadow: 0 0 0 3px var(--clay-tint);
+  }
+  input[aria-invalid='true'] { border-color: #c0392b; box-shadow: 0 0 0 3px #f6dcd8; }
+  .lead-form__foot { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.4rem; }
+  .lead-form__note { margin-top: 1rem; font-size: 0.82rem; color: var(--muted); }
+  .lead-form__note a { color: var(--clay-deep); }
+  .lead-form__status { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: var(--radius); font-weight: 500; }
+  .lead-form__status[data-state='ok'] { background: #e6f4ea; color: #1a7a3d; }
+  .lead-form__status[data-state='err'] { background: #fbe9e7; color: #b23b2e; }
+
+  @media (max-width: 560px) {
+    .lead-form__grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('lead-form') as HTMLFormElement | null;
+  if (form) {
+    const tsInput = document.getElementById('lf-ts') as HTMLInputElement;
+    tsInput.value = String(Date.now());
+    const status = document.getElementById('lf-status') as HTMLParagraphElement;
+    const endpoint = form.dataset.endpoint || '';
+    const wa = form.dataset.wa || '';
+
+    const showStatus = (msg: string, ok: boolean) => {
+      status.hidden = false;
+      status.textContent = msg;
+      status.dataset.state = ok ? 'ok' : 'err';
+    };
+
+    const validate = (): boolean => {
+      let valid = true;
+      for (const el of Array.from(form.querySelectorAll('[required]')) as HTMLInputElement[]) {
+        const bad = !el.value.trim() || (el.type === 'email' && !el.checkValidity());
+        el.setAttribute('aria-invalid', String(bad));
+        if (bad && valid) el.focus();
+        if (bad) valid = false;
+      }
+      return valid;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Honeypot + time trap
+      const hp = (form.elements.namedItem('company') as HTMLInputElement)?.value;
+      const elapsed = Date.now() - Number(tsInput.value || 0);
+      if (hp || elapsed < 3000) {
+        showStatus('Please try again in a moment.', false);
+        return;
+      }
+      if (!validate()) {
+        showStatus('Please fill in the required fields.', false);
+        return;
+      }
+
+      const data = new FormData(form);
+
+      // Real backend configured → POST it.
+      if (endpoint) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: data,
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) throw new Error('Bad response');
+          form.reset();
+          tsInput.value = String(Date.now());
+          showStatus("Thank you — your enquiry has been sent. We'll be in touch shortly.", true);
+          window.location.assign('/thank-you');
+        } catch {
+          showStatus('Something went wrong. Please WhatsApp or call us instead.', false);
+        }
+        return;
+      }
+
+      // No backend → open a prefilled WhatsApp chat (works on any static host).
+      const lines = [
+        '*New enquiry from Arcfinity website*',
+        `Name: ${data.get('name')}`,
+        `Phone: ${data.get('phone')}`,
+        data.get('email') ? `Email: ${data.get('email')}` : '',
+        data.get('location') ? `Location: ${data.get('location')}` : '',
+        data.get('project_type') ? `Project: ${data.get('project_type')}` : '',
+        data.get('area') ? `Area: ${data.get('area')} sq.ft` : '',
+        data.get('message') ? `Message: ${data.get('message')}` : '',
+      ].filter(Boolean);
+      const url = `https://wa.me/${wa}?text=${encodeURIComponent(lines.join('\n'))}`;
+      showStatus('Opening WhatsApp to send your enquiry…', true);
+      window.open(url, '_blank', 'noopener');
+    });
+  }
+</script>

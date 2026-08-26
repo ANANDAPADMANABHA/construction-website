@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { services } from '../config/nav';
+---
+<BaseLayout
+  title="Page Not Found"
+  description="The page you were looking for could not be found. Explore Arcfinity's construction and design services instead."
+  path="/404"
+  noindex
+>
+  <section class="section notfound">
+    <div class="container container--narrow">
+      <p class="notfound__code">404</p>
+      <h1>This page couldn't be found</h1>
+      <p class="lead">The page may have moved or never existed. Here are some helpful places to go instead.</p>
+      <div class="notfound__actions">
+        <a href="/" class="btn btn--primary">Back to home</a>
+        <a href="/contact" class="btn btn--outline">Contact us</a>
+      </div>
+      <div class="notfound__links">
+        <h2>Popular services</h2>
+        <ul>
+          {services.slice(0, 6).map((s) => (
+            <li><a href={`/services/${s.slug}`}><Icon name={s.icon} size={16} /> {s.title}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound { text-align: center; }
+  .notfound__code { font-family: var(--font-display); font-weight: 600; font-size: clamp(4rem, 14vw, 8rem); color: var(--clay); line-height: 1; letter-spacing: -0.04em; }
+  .notfound h1 { margin: 0.5rem 0 1rem; }
+  .notfound .lead { max-width: 46ch; margin-inline: auto; }
+  .notfound__actions { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 2rem; }
+  .notfound__links { margin-top: 3rem; text-align: left; background: var(--paper-2); border-radius: var(--radius-lg); padding: 1.75rem; }
+  .notfound__links h2 { font-size: var(--step-1); margin-bottom: 1rem; }
+  .notfound__links ul { list-style: none; padding: 0; display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
+  .notfound__links a { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 500; }
+  .notfound__links a:hover { color: var(--clay); }
+  .notfound__links :global(svg) { color: var(--clay); }
+  @media (min-width: 560px) { .notfound__links ul { grid-template-columns: 1fr 1fr; } }
+</style>

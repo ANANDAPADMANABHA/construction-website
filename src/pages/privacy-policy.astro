@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site, links } from '../config/site';
+import { breadcrumbSchema } from '../utils/seo';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Privacy Policy', path: '/privacy-policy' },
+];
+const updated = 'August 2025';
+---
+<BaseLayout
+  title="Privacy Policy"
+  description="How Arcfinity collects, uses and protects the personal information you share through our website and enquiry forms."
+  path="/privacy-policy"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader eyebrow="Legal" title="Privacy Policy" crumbs={crumbs} />
+  <section class="section">
+    <div class="container prose">
+      <p class="editor-note"><strong>Editor note:</strong> This is a starter template. Have it reviewed by a legal professional and adjusted to your actual data practices before publishing.</p>
+
+      <p>Last updated: {updated}</p>
+
+      <p>{site.name} ("we", "us", "our") respects your privacy. This policy explains what information we collect through this website and how we use it.</p>
+
+      <h2>Information we collect</h2>
+      <p>We collect the information you voluntarily provide when you submit an enquiry — such as your name, phone number, email, location, project type and message. We do not require you to create an account or provide sensitive personal information.</p>
+
+      <h2>How we use your information</h2>
+      <ul>
+        <li>To respond to your enquiry and provide a consultation or estimate</li>
+        <li>To communicate with you about your project</li>
+        <li>To improve our services and website</li>
+      </ul>
+
+      <h2>Sharing</h2>
+      <p>We do not sell your personal information. We share it only with team members and trusted service providers who help us respond to and deliver your project, and only as necessary.</p>
+
+      <h2>Data retention</h2>
+      <p>We retain enquiry information only as long as needed to respond to and serve you, and as required for our legitimate business records.</p>
+
+      <h2>Cookies &amp; analytics</h2>
+      <p>This website is built to be lightweight and uses minimal scripts. If analytics are enabled in future (for example, to understand which pages are useful), we will use privacy-respecting configuration and update this policy accordingly.</p>
+
+      <h2>Your choices</h2>
+      <p>You may request access to, correction of, or deletion of the personal information you have shared with us by contacting us.</p>
+
+      <h2>Contact</h2>
+      <p>For any privacy questions, email us at <a href={links.mailto}>{site.contact.email}</a> or call <a href={links.tel}>{site.contact.phoneDisplay}</a>.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .editor-note { background: var(--paper-2); border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 1rem 1.25rem; color: var(--muted); font-size: 0.9rem; }
+</style>

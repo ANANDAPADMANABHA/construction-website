@@ -1,0 +1,59 @@
+---
+/**
+ * Accessible FAQ accordion built on native <details>/<summary> — keyboard
+ * operable and screen-reader friendly with zero JavaScript.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  items: Array<{ q: string; a: string }>;
+  heading?: string;
+}
+const { items, heading } = Astro.props;
+---
+<div class="faq">
+  {heading && <h2 class="faq__heading">{heading}</h2>}
+  <div class="faq__list">
+    {
+      items.map((item) => (
+        <details class="faq__item">
+          <summary>
+            <span>{item.q}</span>
+            <Icon name="plus" size={20} class="faq__icon" />
+          </summary>
+          <div class="faq__answer">
+            <p set:html={item.a} />
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .faq__heading { margin-bottom: 1.5rem; }
+  .faq__list { border-top: 1px solid var(--line); }
+  .faq__item { border-bottom: 1px solid var(--line); }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 0.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--step-1);
+    color: var(--ink);
+  }
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__icon { flex: none; color: var(--clay); transition: transform 0.2s var(--ease); }
+  .faq__item[open] .faq__icon { transform: rotate(45deg); }
+  .faq__answer { padding: 0 0.25rem 1.25rem; max-width: 68ch; }
+  .faq__answer p { color: var(--muted); }
+  .faq__answer :global(a) { color: var(--clay-deep); }
+  .section--dark .faq__list, .section--dark .faq__item { border-color: var(--on-dark-line); }
+  .section--dark .faq__item summary { color: var(--on-dark); }
+  .section--dark .faq__answer p { color: var(--on-dark-muted); }
+</style>

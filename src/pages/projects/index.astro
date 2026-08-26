@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { projectCategories } from '../../config/nav';
+import { breadcrumbSchema } from '../../utils/seo';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const hasSamples = projects.some((p) => p.data.isSample);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Projects', path: '/projects' },
+];
+---
+<BaseLayout
+  title="Projects & Portfolio"
+  description="Explore construction, renovation and interior projects by Arcfinity across Thiruvananthapuram and Kerala — residential and commercial work with locations, areas and services."
+  path="/projects"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="Portfolio"
+    title="Our projects"
+    intro="A look at the homes, commercial spaces and interiors we build across Kerala. Filter by category to see relevant work."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      {hasSamples && (
+        <p class="sample-note">
+          <Icon name="eye" size={16} />
+          These are sample project layouts included to demonstrate the portfolio. Replace them with real completed projects and photographs before launch.
+        </p>
+      )}
+
+      <div class="filters" role="group" aria-label="Filter projects by category">
+        <button class="filter is-active" data-filter="all" aria-pressed="true">All</button>
+        {projectCategories.map((c) => (
+          <button class="filter" data-filter={c} aria-pressed="false">{c}</button>
+        ))}
+      </div>
+
+      <div class="grid grid-3" id="project-grid">
+        {projects.map((p) => (
+          <div class="project-item" data-category={p.data.category}>
+            <ProjectCard slug={p.id} title={p.data.title} category={p.data.category}
+              location={p.data.location} area={p.data.area} status={p.data.status} seed={p.data.seed} />
+          </div>
+        ))}
+      </div>
+      <p class="no-results" id="no-results" hidden>No projects in this category yet.</p>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .sample-note {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 1.75rem; padding: 0.75rem 1rem;
+    background: var(--clay-tint); color: var(--clay-deep);
+    border-radius: var(--radius); font-size: 0.88rem; line-height: 1.5;
+  }
+  .sample-note :global(svg) { flex: none; }
+  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .filter {
+    font-family: var(--font-display); font-weight: 500; font-size: 0.92rem;
+    padding: 0.55rem 1.1rem; min-height: 2.6rem;
+    background: var(--paper-2); border: 1px solid transparent; border-radius: var(--radius-pill);
+    color: var(--ink); cursor: pointer; transition: background 0.15s var(--ease), color 0.15s var(--ease);
+  }
+  .filter:hover { background: var(--line); }
+  .filter.is-active { background: var(--ink); color: var(--on-dark); }
+  .no-results { color: var(--muted); padding: 2rem 0; }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const items = document.querySelectorAll<HTMLElement>('.project-item');
+  const noResults = document.getElementById('no-results');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      buttons.forEach((b) => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      let visible = 0;
+      items.forEach((item) => {
+        const show = filter === 'all' || item.dataset.category === filter;
+        item.hidden = !show;
+        if (show) visible++;
+      });
+      if (noResults) noResults.hidden = visible !== 0;
+    });
+  });
+</script>

@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { breadcrumbSchema } from '../../utils/seo';
+
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const [featured, ...rest] = posts;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Resources', path: '/blog' },
+];
+---
+<BaseLayout
+  title="Resources & Guides"
+  description="Practical guides on building, renovating and designing homes in Trivandrum and Kerala — construction costs, building permits, house plans and more, from Arcfinity."
+  path="/blog"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="Resources"
+    title="Guides for building in Kerala"
+    intro="Clear, practical answers to the questions homeowners actually ask — costs, permits, plans and how to build well in Trivandrum."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      {featured && (
+        <a href={`/blog/${featured.id}`} class="feature card card--link">
+          <div class="feature__body">
+            <span class="badge">{featured.data.category}</span>
+            <h2>{featured.data.title}</h2>
+            <p>{featured.data.excerpt}</p>
+            <span class="feature__meta">
+              {fmt(featured.data.publishDate)} · <span class="arrow-link">Read guide <Icon name="arrow" size={16} /></span>
+            </span>
+          </div>
+        </a>
+      )}
+
+      <div class="grid grid-3 post-grid">
+        {rest.map((post) => (
+          <a href={`/blog/${post.id}`} class="post-card card card--link">
+            <span class="badge badge--muted">{post.data.category}</span>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.excerpt}</p>
+            <time datetime={post.data.publishDate.toISOString()}>{fmt(post.data.publishDate)}</time>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .feature { display: block; text-decoration: none; color: inherit; margin-bottom: 2.5rem; background: var(--ink); color: var(--on-dark); border: none; padding: clamp(1.75rem, 4vw, 3rem); }
+  .feature h2 { color: var(--on-dark); margin: 0.9rem 0 0.6rem; max-width: 24ch; }
+  .feature p { color: var(--on-dark-muted); max-width: 60ch; }
+  .feature__meta { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.4rem; color: var(--on-dark-muted); font-size: 0.9rem; }
+  .feature .arrow-link { color: var(--brass); }
+
+  .post-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; height: 100%; }
+  .post-card h3 { font-size: var(--step-1); margin: 0.8rem 0 0.5rem; }
+  .post-card p { color: var(--muted); font-size: 0.95rem; flex: 1; }
+  .post-card time { margin-top: 1rem; color: var(--muted-2); font-size: 0.85rem; }
+</style>

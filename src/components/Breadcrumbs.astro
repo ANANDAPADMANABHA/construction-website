@@ -1,0 +1,48 @@
+---
+import Icon from './Icon.astro';
+import type { Crumb } from '../utils/seo';
+
+interface Props {
+  items: Crumb[];
+  /** Set true when placed on a dark background. */
+  onDark?: boolean;
+}
+const { items, onDark = false } = Astro.props;
+---
+<nav class={`breadcrumbs ${onDark ? 'breadcrumbs--dark' : ''}`} aria-label="Breadcrumb">
+  <ol>
+    {
+      items.map((item, i) => (
+        <li>
+          {i < items.length - 1 ? (
+            <a href={item.path}>{item.name}</a>
+          ) : (
+            <span aria-current="page">{item.name}</span>
+          )}
+          {i < items.length - 1 && <Icon name="arrow" size={13} class="crumb-sep" />}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+  .breadcrumbs li { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .breadcrumbs a { color: var(--muted); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--clay); }
+  .breadcrumbs span { color: var(--ink); font-weight: 500; }
+  .crumb-sep { color: var(--line-strong); }
+  .breadcrumbs--dark a { color: var(--on-dark-muted); }
+  .breadcrumbs--dark span { color: var(--on-dark); }
+  .breadcrumbs--dark .crumb-sep { color: var(--on-dark-line); }
+</style>

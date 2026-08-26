@@ -1,0 +1,237 @@
+---
+import { primaryNav } from '../config/nav';
+import { site, links } from '../config/site';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath === href || currentPath.startsWith(href + '/');
+---
+<header class="site-header" id="site-header">
+  <div class="container site-header__inner">
+    <a href="/" class="site-header__brand" aria-label={`${site.name} — home`}>
+      <Logo />
+    </a>
+
+    <nav class="nav-desktop" aria-label="Primary">
+      <ul>
+        {
+          primaryNav.map((item) =>
+            item.children ? (
+              <li class="has-dropdown">
+                <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} aria-haspopup="true">
+                  {item.label}
+                  <Icon name="chevronDown" size={16} />
+                </a>
+                <div class="dropdown" role="menu">
+                  <ul>
+                    {item.children.map((c) => (
+                      <li role="none">
+                        <a role="menuitem" href={c.href}>{c.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ) : (
+              <li>
+                <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            )
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a href={links.tel} class="header-call" aria-label={`Call ${site.name}`}>
+        <Icon name="phone" size={18} />
+        <span>{site.contact.phoneDisplay}</span>
+      </a>
+      <a href="/contact" class="btn btn--primary btn--sm">Get a Free Consultation</a>
+    </div>
+
+    <button
+      class="nav-toggle"
+      id="nav-toggle"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <Icon name="menu" size={26} />
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav aria-label="Mobile">
+      <ul>
+        {
+          primaryNav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+              {item.children && (
+                <ul class="mobile-sub">
+                  {item.children.map((c) => (
+                    <li><a href={c.href}>{c.label}</a></li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="mobile-menu__cta">
+      <a href="/contact" class="btn btn--primary btn--block">Get a Free Consultation</a>
+      <a href={links.whatsapp()} class="btn btn--whatsapp btn--block" rel="nofollow noopener" target="_blank">
+        <Icon name="whatsapp" size={18} /> WhatsApp Us
+      </a>
+      <a href={links.tel} class="btn btn--outline btn--block">
+        <Icon name="phone" size={18} /> {site.contact.phoneDisplay}
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: var(--header-h);
+  }
+  .site-header__brand { display: inline-flex; align-items: center; text-decoration: none; }
+
+  .nav-desktop { display: none; }
+  .nav-desktop ul { list-style: none; display: flex; gap: 0.35rem; margin: 0; padding: 0; }
+  .nav-desktop a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.8rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.98rem;
+    color: var(--ink);
+    text-decoration: none;
+    border-radius: var(--radius);
+  }
+  .nav-desktop a[aria-current='page'] { color: var(--clay); }
+  .nav-desktop a:hover { background: var(--paper-2); }
+
+  .has-dropdown { position: relative; }
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    min-width: 15rem;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-2);
+    padding: 0.4rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.16s var(--ease), transform 0.16s var(--ease), visibility 0.16s;
+  }
+  .dropdown ul { flex-direction: column; gap: 0; }
+  .dropdown a { display: block; padding: 0.55rem 0.7rem; border-radius: var(--radius); font-weight: 500; }
+  .has-dropdown:hover .dropdown,
+  .has-dropdown:focus-within .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .site-header__cta { display: none; align-items: center; gap: 0.9rem; }
+  .header-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .header-call:hover { color: var(--clay); }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 1rem clamp(1.1rem, 4vw, 2.5rem) 1.5rem;
+    max-height: calc(100svh - var(--header-h));
+    overflow-y: auto;
+  }
+  .mobile-menu nav ul { list-style: none; margin: 0; padding: 0; }
+  .mobile-menu > nav > ul > li { border-bottom: 1px solid var(--line); }
+  .mobile-menu a {
+    display: block;
+    padding: 0.85rem 0.25rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.1rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .mobile-menu a[aria-current='page'] { color: var(--clay); }
+  .mobile-sub { padding-left: 0.9rem !important; padding-bottom: 0.5rem; }
+  .mobile-sub a { font-size: 0.98rem; font-weight: 400; padding: 0.5rem 0.25rem; color: var(--muted); }
+  .mobile-menu__cta { display: grid; gap: 0.6rem; margin-top: 1.4rem; }
+
+  @media (min-width: 960px) {
+    .nav-desktop { display: block; }
+    .site-header__cta { display: flex; }
+    .nav-toggle, .mobile-menu { display: none !important; }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      menu.hidden = !open;
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+    toggle.addEventListener('click', () =>
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true')
+    );
+    // Close on navigation / escape
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).tagName === 'A') setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
+    });
+  }
+</script>

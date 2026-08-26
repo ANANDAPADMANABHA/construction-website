@@ -1,0 +1,134 @@
+# ============================================================================
+#  Arcfinity content admin — Sveltia CMS configuration
+#  This defines the forms you see at /admin/. The fields here MUST match the
+#  content schema in src/content.config.ts, so edited files still build.
+# ============================================================================
+
+# --- Where changes are saved ------------------------------------------------
+# For LIVE editing by your team, connect your GitHub repo below and set up auth
+# (see notes at the bottom). Until then, `local_backend: true` lets you edit the
+# files on your own computer with no login.
+backend:
+  name: github
+  repo: your-github-user/arcfinity-website   # ← PLACEHOLDER: set to your repo
+  branch: main
+
+# Enables no-login local editing (npm run dev → open /admin/ in Chrome/Edge).
+local_backend: true
+
+# Where uploaded images are stored and how they're referenced on the site.
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+# A friendlier default publish label.
+publish_mode: simple
+
+collections:
+  # ────────────────────────────── PROJECTS ──────────────────────────────
+  - name: projects
+    label: Projects
+    label_singular: Project
+    description: "Portfolio work — homes, commercial, renovation, interior and 3D design."
+    folder: "src/content/projects"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}}  ·  {{category}}  ·  {{location}}"
+    sortable_fields: [order, title, category]
+    fields:
+      - { label: "Project title", name: title, widget: string }
+      - { label: "SEO meta title (optional)", name: metaTitle, widget: string, required: false, hint: "Custom browser-tab title. Leave blank to use the project title." }
+      - { label: "Short description", name: description, widget: text, hint: "1–2 sentences. Used on the card and for SEO/social sharing." }
+      - label: "Category"
+        name: category
+        widget: select
+        default: "Residential"
+        options: ["Residential", "Commercial", "Renovation", "Interior", "3D Design"]
+      - { label: "Location", name: location, widget: string, hint: "e.g. Thiruvananthapuram, Kerala" }
+      - { label: "Area (optional)", name: area, widget: string, required: false, hint: "e.g. 2,400 sq.ft" }
+      - label: "Services provided"
+        name: services
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - "House Construction"
+          - "Commercial Construction"
+          - "Home Renovation"
+          - "Interior Design"
+          - "2D House Plans"
+          - "3D Elevation Design"
+          - "Building Permit"
+          - "MEP Drawings"
+      - label: "Status"
+        name: status
+        widget: select
+        default: "Completed"
+        options: ["Completed", "Ongoing", "Upcoming"]
+      - { label: "Completed (year, optional)", name: completedDate, widget: string, required: false, hint: "e.g. 2025" }
+      - label: "Images / renders"
+        name: images
+        widget: list
+        required: false
+        label_singular: "Image"
+        summary: "{{fields.alt}}"
+        hint: "Add render/photo images. The first image is used as the main/cover image. If left empty, a branded placeholder is shown."
+        fields:
+          - { label: "Image file", name: src, widget: image }
+          - { label: "Alt text", name: alt, widget: string, hint: "Describe the image for accessibility & SEO, e.g. 'Front 3D elevation of a modern villa in Trivandrum'." }
+      - { label: "Feature on homepage?", name: featured, widget: boolean, default: false, hint: "Show this in the homepage 'Featured projects' grid." }
+      - { label: "Sort order", name: order, widget: number, default: 99, value_type: int, required: false, hint: "Lower numbers appear first." }
+      - { label: "Sample entry?", name: isSample, widget: boolean, default: false, hint: "Leave OFF for real projects. (Sample entries show a 'replace me' notice.)" }
+      - { label: "Placeholder style (1–4)", name: seed, widget: number, default: 1, value_type: int, required: false, hint: "Only used when there are no images — picks which placeholder graphic to show." }
+      - { label: "Description / case study", name: body, widget: markdown, hint: "Full project write-up. Supports headings, lists and links." }
+
+  # ─────────────────────────── RESOURCES / BLOG ─────────────────────────
+  - name: blog
+    label: Resources / Guides
+    label_singular: Article
+    description: "SEO guides and articles."
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}}  ·  {{publishDate}}"
+    sortable_fields: [publishDate, title]
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "SEO meta title (optional)", name: metaTitle, widget: string, required: false }
+      - { label: "Meta description", name: description, widget: text, hint: "For search engines & social sharing." }
+      - { label: "Excerpt", name: excerpt, widget: text, hint: "Short summary shown on the resources listing." }
+      - { label: "Category", name: category, widget: string, default: "Guide" }
+      - { label: "Publish date", name: publishDate, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - { label: "Updated date (optional)", name: updatedDate, widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - { label: "Author", name: author, widget: string, default: "Arcfinity" }
+      - label: "FAQs (optional)"
+        name: faqs
+        widget: list
+        required: false
+        label_singular: "FAQ"
+        summary: "{{fields.q}}"
+        fields:
+          - { label: "Question", name: q, widget: string }
+          - { label: "Answer", name: a, widget: text }
+      - { label: "Related article slugs (optional)", name: related, widget: list, required: false, hint: "Filenames without .md, e.g. house-construction-cost-trivandrum" }
+      - { label: "Draft (hide from site)", name: draft, widget: boolean, default: false }
+      - { label: "Article body", name: body, widget: markdown }
+
+# ============================================================================
+#  SETTING UP LIVE EDITING FOR YOUR TEAM (one-time)
+#  ----------------------------------------------------------------------------
+#  1. Put this project in a GitHub repo and set `repo:` above to it.
+#  2. Sveltia CMS needs a GitHub OAuth app so staff can log in. The quickest
+#     route is Sveltia's ready-made auth: deploy their free Cloudflare Worker
+#     (github.com/sveltia/sveltia-cms-auth) — it's a 5-minute copy/paste — then
+#     add `site_domain` / the auth endpoint per their README.
+#  3. Your host (Netlify / Vercel / Cloudflare Pages) rebuilds automatically on
+#     each commit, so hitting "Publish" here puts the new work live within a
+#     minute or two — no manual build needed.
+#
+#  Until that's set up, you can already add and edit everything locally:
+#     npm run dev   →   open http://localhost:4321/admin in Chrome or Edge
+#                       (note: /admin — no trailing slash — or /admin/index.html)
+#     →   choose "Work with Local Repository" and pick this project folder.
+# ============================================================================

@@ -1,0 +1,219 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Icon from '../../components/Icon.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { serviceBySlug } from '../../config/nav';
+import { breadcrumbSchema, serviceSchema, faqSchema } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+// Related services (from frontmatter)
+const related = d.related.map((slug) => serviceBySlug(slug)).filter(Boolean);
+
+// Relevant project examples — match this service to project.services
+const allProjects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const shortTitle = serviceBySlug(entry.id)?.title ?? d.title;
+const relatedProjects = allProjects
+  .filter((p) => p.data.services.some((s) => s.toLowerCase().includes(shortTitle.toLowerCase().split(' ')[0])))
+  .slice(0, 2);
+const projectExamples = relatedProjects.length ? relatedProjects : allProjects.filter((p) => p.data.featured).slice(0, 2);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services' },
+  { name: shortTitle, path: `/services/${entry.id}` },
+];
+
+const schema = [
+  breadcrumbSchema(crumbs),
+  serviceSchema({ name: d.title, description: d.description, slug: entry.id }),
+];
+if (d.faqs.length) schema.push(faqSchema(d.faqs.map((f) => ({ q: f.q, a: f.a.replace(/<[^>]+>/g, '') }))));
+---
+<BaseLayout title={d.metaTitle} description={d.description} path={`/services/${entry.id}`} schema={schema}>
+  <PageHeader eyebrow="Service" title={d.title} intro={d.intro} crumbs={crumbs} />
+
+  <section class="section">
+    <div class="container service-body">
+      <div class="service-main">
+        <!-- Problems solved -->
+        {d.problems.length > 0 && (
+          <div class="block">
+            <h2>Problems this solves</h2>
+            <ul class="problem-list">
+              {d.problems.map((p) => (
+                <li><Icon name="check" size={18} /> <span>{p}</span></li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <!-- Process -->
+        {d.process.length > 0 && (
+          <div class="block">
+            <h2>How it works</h2>
+            <ol class="proc">
+              {d.process.map((step, i) => (
+                <li>
+                  <span class="proc__n">{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        <!-- What's included -->
+        {d.included.length > 0 && (
+          <div class="block">
+            <h2>What's included</h2>
+            <ul class="incl">
+              {d.included.map((item) => (
+                <li><Icon name="check" size={16} /> {item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <!-- Benefits -->
+        {d.benefits.length > 0 && (
+          <div class="block">
+            <h2>Why choose Arcfinity for this</h2>
+            <div class="benefits">
+              {d.benefits.map((b) => (
+                <div class="benefit">
+                  <h3>{b.title}</h3>
+                  <p>{b.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Prose body -->
+        <div class="block prose">
+          <Content />
+        </div>
+
+        <!-- FAQ -->
+        {d.faqs.length > 0 && (
+          <div class="block">
+            <Faq items={d.faqs} heading="Frequently asked questions" />
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="service-aside">
+        <div class="aside-card">
+          <h2 class="aside-card__title">Get a free consultation</h2>
+          <p>Tell us about your project and get an itemised, no-obligation estimate.</p>
+          <LeadForm compact />
+        </div>
+
+        {related.length > 0 && (
+          <div class="aside-related">
+            <h2 class="aside-card__title">Related services</h2>
+            <ul>
+              {related.map((r) => r && (
+                <li>
+                  <a href={`/services/${r.slug}`}>
+                    <Icon name={r.icon} size={18} /> <span>{r.title}</span>
+                    <Icon name="arrowUpRight" size={16} class="rel-arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  <!-- Project examples -->
+  {projectExamples.length > 0 && (
+    <section class="section section--paper2">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <p class="eyebrow">Relevant work</p>
+            <h2>Related projects</h2>
+          </div>
+          <a href="/projects" class="btn btn--outline btn--sm">View all projects</a>
+        </div>
+        <div class="grid grid-2">
+          {projectExamples.map((p) => (
+            <ProjectCard slug={p.id} title={p.data.title} category={p.data.category}
+              location={p.data.location} area={p.data.area} status={p.data.status} seed={p.data.seed} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .service-body { display: grid; gap: 3rem; align-items: start; }
+  .block + .block { margin-top: 2.75rem; }
+  .service-main h2 { font-size: var(--step-2); margin-bottom: 1.1rem; }
+
+  .problem-list { list-style: none; padding: 0; display: grid; gap: 0.7rem; }
+  .problem-list li { display: flex; gap: 0.7rem; align-items: flex-start; }
+  .problem-list :global(svg) { color: var(--clay); flex: none; margin-top: 4px; }
+
+  .proc { list-style: none; padding: 0; display: grid; gap: 0; }
+  .proc li { display: flex; gap: 1.2rem; padding: 1.2rem 0; border-top: 1px solid var(--line); }
+  .proc li:last-child { border-bottom: 1px solid var(--line); }
+  .proc__n { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); color: var(--clay); flex: none; }
+  .proc h3 { font-size: var(--step-1); }
+  .proc p { color: var(--muted); margin-top: 0.25rem; }
+
+  .incl { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
+  .incl li { display: flex; align-items: flex-start; gap: 0.6rem; }
+  .incl :global(svg) { color: var(--clay); flex: none; margin-top: 5px; }
+
+  .benefits { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
+  .benefit { padding: 1.2rem; background: var(--paper-2); border-radius: var(--radius-lg); }
+  .benefit h3 { font-size: var(--step-1); margin-bottom: 0.35rem; }
+  .benefit p { color: var(--muted); }
+
+  .aside-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .aside-card > p { color: var(--muted); margin: 0.4rem 0 1.2rem; font-size: 0.95rem; }
+  .aside-card__title { font-size: var(--step-1); }
+  .aside-card :global(.lead-form) { border: none; padding: 0; background: transparent; }
+  .aside-related { margin-top: 1.5rem; }
+  .aside-related ul { list-style: none; padding: 0; margin-top: 1rem; display: grid; gap: 0.5rem; }
+  .aside-related a { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1rem; background: var(--paper-2); border-radius: var(--radius); text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 500; }
+  .aside-related a:hover { background: var(--clay-tint); }
+  .aside-related a span { flex: 1; }
+  .aside-related :global(.rel-arrow) { color: var(--muted); }
+
+  @media (min-width: 600px) {
+    .incl { grid-template-columns: 1fr 1fr; }
+    .benefits { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 980px) {
+    .service-body { grid-template-columns: 1.6fr 0.9fr; gap: 3.5rem; }
+    .service-aside { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+  }
+</style>

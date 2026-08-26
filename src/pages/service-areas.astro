@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config/site';
+import { services } from '../config/nav';
+import { breadcrumbSchema } from '../utils/seo';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Service Areas', path: '/service-areas' },
+];
+---
+<BaseLayout
+  title="Service Areas in Kerala"
+  description="Arcfinity provides construction and design services across Thiruvananthapuram, Neyyattinkara, Attingal, Nedumangad, Kollam and nearby areas in Kerala."
+  path="/service-areas"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="Where we work"
+    title="Serving Thiruvananthapuram & across Kerala"
+    intro="Arcfinity works with homeowners and businesses throughout the region. Here's where we operate — if your plot is nearby and not listed, just ask."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="areas-grid">
+        {site.serviceAreas.map((a) => (
+          <div class={`area-card ${a.primary ? 'area-card--primary' : ''}`}>
+            <span class="area-card__icon"><Icon name="pin" size={22} /></span>
+            <h2>{a.name}{a.primary && <span class="area-tag">Primary market</span>}</h2>
+            <p>
+              Full construction and design services in {a.name} — house construction,
+              renovation, interiors, plans, 3D elevations, permits and MEP.
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div class="areas-services">
+        <h2>Services available in every area</h2>
+        <ul>
+          {services.map((s) => (
+            <li><a href={`/services/${s.slug}`}><Icon name={s.icon} size={18} /> {s.title}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <p class="areas-disclaimer">
+        <Icon name="check" size={16} />
+        We list only areas we genuinely serve. Serving a plot just outside these
+        areas? <a href="/contact">Contact us</a> — we'll tell you honestly whether
+        we can take it on.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .areas-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; margin-bottom: 3rem; }
+  .area-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.75rem; }
+  .area-card--primary { border-color: var(--clay); background: var(--clay-tint); }
+  .area-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 2.8rem; height: 2.8rem; border-radius: var(--radius); background: var(--paper-2); color: var(--clay-deep); margin-bottom: 0.9rem; }
+  .area-card--primary .area-card__icon { background: #fff; }
+  .area-card h2 { font-size: var(--step-1); display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+  .area-tag { font-size: 0.72rem; font-family: var(--font-display); background: var(--clay); color: #fff; padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); font-weight: 500; letter-spacing: 0.04em; }
+  .area-card p { color: var(--muted); font-size: 0.95rem; }
+
+  .areas-services { background: var(--paper-2); border-radius: var(--radius-lg); padding: 2rem; }
+  .areas-services h2 { font-size: var(--step-1); margin-bottom: 1.2rem; }
+  .areas-services ul { list-style: none; padding: 0; display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
+  .areas-services a { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 500; padding: 0.6rem 0; }
+  .areas-services a:hover { color: var(--clay); }
+  .areas-services :global(svg) { color: var(--clay); }
+
+  .areas-disclaimer { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 2rem; color: var(--muted); font-size: 0.92rem; }
+  .areas-disclaimer :global(svg) { color: var(--clay); flex: none; margin-top: 4px; }
+  .areas-disclaimer a { color: var(--clay-deep); }
+
+  @media (min-width: 640px) { .areas-grid { grid-template-columns: 1fr 1fr; } .areas-services ul { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 960px) { .areas-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

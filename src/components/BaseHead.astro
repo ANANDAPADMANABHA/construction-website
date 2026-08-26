@@ -1,0 +1,77 @@
+---
+import { site } from '../config/site';
+import { canonical, absoluteUrl, type SeoProps } from '../utils/seo';
+
+interface Props extends SeoProps {
+  /** JSON-LD objects to embed in <head>. */
+  schema?: Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  path,
+  image = site.defaultOgImage,
+  type = 'website',
+  noindex = false,
+  publishedTime,
+  modifiedTime,
+  schema = [],
+} = Astro.props;
+
+const canonicalUrl = canonical(path);
+const ogImage = absoluteUrl(image);
+const fullTitle =
+  title === site.name ? `${site.name} — ${site.tagline}` : `${title} | ${site.name}`;
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{
+  noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+<meta name="theme-color" content={site.themeColor} />
+<meta name="author" content={site.name} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={site.locale} />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- Icons & manifest -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<!-- Perf: help the browser establish the connection for the responsive
+     image service is unnecessary (self-hosted). Fonts are bundled locally. -->
+
+<!-- Structured data -->
+{
+  schema.map((obj) => (
+    <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+  ))
+}

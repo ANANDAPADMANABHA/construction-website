@@ -1,0 +1,53 @@
+---
+/**
+ * Branded architectural placeholder graphic (inline SVG — no network request,
+ * no layout shift). Used wherever real photography is not yet available.
+ * Replace with real <Image /> photos before launch for full visual impact.
+ *
+ * `seed` varies the composition; `ratio` sets the aspect box.
+ */
+interface Props {
+  seed?: number;
+  ratio?: string; // e.g. "16/10"
+  label?: string;
+  class?: string;
+}
+const { seed = 1, ratio = '16/10', label = 'Architectural placeholder', class: className = '' } =
+  Astro.props;
+
+const variants = [
+  // Each is a set of building silhouettes / arcs
+  `<rect x="40" y="150" width="80" height="120" /><rect x="130" y="110" width="70" height="160" /><path d="M210 270V140a45 45 0 0 1 90 0v130" fill="none" stroke-width="3"/><rect x="310" y="90" width="60" height="180" /><path d="M0 270h400" stroke-width="3"/>`,
+  `<path d="M60 270V120l80-50 80 50v150" fill="none" stroke-width="3"/><path d="M120 270v-70h40v70" /><rect x="250" y="100" width="90" height="170" /><path d="M250 130h90M250 165h90M250 200h90" stroke-width="2"/><path d="M0 270h400" stroke-width="3"/>`,
+  `<path d="M40 270c0-90 40-150 120-150s120 60 120 150" fill="none" stroke-width="3"/><rect x="130" y="180" width="60" height="90" /><rect x="300" y="140" width="60" height="130" /><path d="M0 270h400" stroke-width="3"/>`,
+  `<rect x="50" y="80" width="110" height="190" /><path d="M50 120h110M50 160h110M50 200h110" stroke-width="2"/><path d="M210 270V150a55 55 0 0 1 110 0v120" fill="none" stroke-width="3"/><path d="M0 270h400" stroke-width="3"/>`,
+];
+const shapes = variants[(seed - 1) % variants.length];
+---
+<div class={`ph ${className}`} style={`aspect-ratio:${ratio}`} role="img" aria-label={label}>
+  <svg viewBox="0 0 400 280" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <g class="ph__ink" fill="none" stroke="currentColor" set:html={shapes} />
+    <g class="ph__fill" set:html={shapes} />
+  </svg>
+  <span class="ph__mark" aria-hidden="true">
+    <svg width="26" height="22" viewBox="0 0 34 28" fill="none">
+      <path d="M2 24C2 12 8.5 4 17 4s15 8 15 20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M9 24c0-6 3.6-10 8-10s8 4 8 10" stroke="var(--clay)" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+  </span>
+</div>
+
+<style>
+  .ph {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background:
+      linear-gradient(160deg, var(--paper-2), #e7e1d7 70%);
+    border-radius: inherit;
+  }
+  .ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ph__ink { color: rgba(22, 24, 29, 0.28); }
+  .ph__fill :global(rect), .ph__fill :global(path[fill]:not([fill='none'])) { fill: rgba(22, 24, 29, 0.05); }
+  .ph__mark { position: absolute; right: 0.75rem; bottom: 0.6rem; color: rgba(22,24,29,0.5); }
+</style>

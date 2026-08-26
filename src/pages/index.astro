@@ -1,0 +1,327 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Testimonial from '../components/Testimonial.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { site, links } from '../config/site';
+import { services as serviceMeta } from '../config/nav';
+import { testimonials, commitments } from '../config/testimonials';
+import { faqSchema } from '../utils/seo';
+
+// Featured projects (sample entries until real projects are added)
+const allProjects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const featured = allProjects.filter((p) => p.data.featured).slice(0, 4);
+
+const trustPoints = [
+  { icon: 'handshake', label: 'One accountable team' },
+  { icon: 'layers', label: 'Transparent stage-wise costing' },
+  { icon: 'shield', label: 'Engineering supervision' },
+  { icon: 'check', label: 'Written agreement' },
+];
+
+const process = [
+  { n: '01', title: 'Consultation & site study', text: 'We understand your needs, budget and plot — soil, orientation, access and setbacks.' },
+  { n: '02', title: 'Design & approvals', text: '2D plans, 3D elevation, structural drawings, and building permit coordination.' },
+  { n: '03', title: 'Transparent estimate', text: 'A stage-wise cost sheet and a written agreement with clear specifications.' },
+  { n: '04', title: 'Construction & supervision', text: 'Foundation to finishing, executed with engineering supervision and quality checks.' },
+  { n: '05', title: 'Quality check & handover', text: 'Snags closed, documentation prepared, and your building handed over clean.' },
+];
+
+const capabilities = [
+  { icon: 'compass', title: 'Architecture & design', text: 'Floor plans, 3D elevations and interiors — the vision, drawn.' },
+  { icon: 'ruler', title: 'Engineering', text: 'Structural design and MEP coordinated for how the building will be used.' },
+  { icon: 'building', title: 'Construction', text: 'Full execution with supervision at the stages that matter most.' },
+  { icon: 'permit', title: 'Approvals', text: 'Building permit drawings and approval coordination, handled for you.' },
+];
+
+const homeFaqs = [
+  { q: 'Where does Arcfinity provide construction services?', a: `We serve Thiruvananthapuram (Trivandrum), Neyyattinkara, Attingal, Nedumangad and Kollam, and nearby areas across Kerala.` },
+  { q: 'Do you handle design, approvals and construction together?', a: `Yes. Arcfinity offers <a href="/services/2d-house-plans">plans</a>, <a href="/services/3d-elevation-design">3D elevations</a>, <a href="/services/interior-design">interiors</a>, <a href="/services/building-permit">permits</a> and <a href="/services/house-construction">construction</a> as one coordinated, accountable service.` },
+  { q: 'How much does it cost to build a house with Arcfinity?', a: `Cost depends on area, floors, finishes and site conditions. We prepare a free, itemised, stage-wise estimate for your specific plan. See our <a href="/blog/house-construction-cost-trivandrum">cost guide</a>.` },
+  { q: 'How do I get started?', a: `Book a free consultation via our <a href="/contact">contact form</a>, <a href="${links.whatsapp()}" rel="nofollow">WhatsApp</a>, or call us. We'll discuss your project and next steps.` },
+];
+
+const description =
+  'Arcfinity is a construction and design company in Thiruvananthapuram, Kerala. We build homes and commercial spaces — plans, 3D design, interiors, permits and full construction — with engineering rigour and transparent costing.';
+---
+<BaseLayout
+  title={site.name}
+  description={description}
+  path="/"
+  siteSchema
+  schema={[faqSchema(homeFaqs.map((f) => ({ q: f.q, a: f.a.replace(/<[^>]+>/g, '') })))]}
+>
+  <!-- ============================ HERO ============================ -->
+  <section class="hero section--dark">
+    <div class="hero__lines" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">Construction &amp; Design · Thiruvananthapuram, Kerala</p>
+        <h1 class="hero__title">Building Homes. <br />Shaping Possibilities.</h1>
+        <p class="hero__lead">
+          Arcfinity designs and builds homes, commercial spaces and interiors across
+          Thiruvananthapuram and Kerala — with engineering rigour, transparent costing
+          and a single team accountable from first drawing to final handover.
+        </p>
+        <div class="hero__actions">
+          <a href="/contact" class="btn btn--primary">Get a Free Consultation</a>
+          <a href="/projects" class="btn btn--outline">View Our Projects</a>
+        </div>
+        <ul class="hero__trust" aria-label="Why Arcfinity">
+          {trustPoints.map((t) => (
+            <li><Icon name={t.icon} size={18} /> {t.label}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="hero__media" aria-hidden="true">
+        <Placeholder seed={2} ratio="4/5" label="Architectural visualisation" class="hero__ph" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= SERVICES OVERVIEW ==================== -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">What we do</p>
+        <h2>Design and construction, under one roof</h2>
+        <p>From a single 2D plan to a fully built and finished home, Arcfinity covers every stage of the journey — so nothing falls through the gaps between separate vendors.</p>
+      </div>
+      <div class="grid grid-3">
+        {serviceMeta.map((s) => <ServiceCard {...s} />)}
+      </div>
+      <p class="section-cta">
+        <a href="/services" class="arrow-link">Explore all services <Icon name="arrow" size={18} /></a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= WHY ARCFINITY ====================== -->
+  <section class="section section--paper2" id="why">
+    <div class="container why">
+      <div class="why__intro">
+        <p class="eyebrow">Why Arcfinity</p>
+        <h2>The difference is accountability</h2>
+        <p class="lead">Most construction stress comes from fragmentation — a designer here, a contractor there, and no one owning the result. Arcfinity is built to remove that.</p>
+        <a href="/about" class="arrow-link">Read our story <Icon name="arrow" size={18} /></a>
+      </div>
+      <div class="why__grid">
+        {commitments.map((c) => (
+          <div class="why__card">
+            <span class="why__icon"><Icon name={c.icon} size={24} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= FEATURED PROJECTS ==================== -->
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">Selected work</p>
+          <h2>Featured projects</h2>
+        </div>
+        <a href="/projects" class="btn btn--outline btn--sm">View all projects</a>
+      </div>
+      <div class="grid grid-2">
+        {featured.map((p) => (
+          <ProjectCard
+            slug={p.id}
+            title={p.data.title}
+            category={p.data.category}
+            location={p.data.location}
+            area={p.data.area}
+            status={p.data.status}
+            seed={p.data.seed}
+          />
+        ))}
+      </div>
+      {featured.some((p) => p.data.isSample) && (
+        <p class="sample-note">
+          <Icon name="eye" size={16} /> The projects shown are sample layouts. Replace them with real completed projects and photographs before launch.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- ====================== CONSTRUCTION PROCESS ================== -->
+  <section class="section section--dark" id="process">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">How we work</p>
+        <h2>A clear, five-step process</h2>
+        <p>No black boxes. You always know what stage your project is in and what happens next.</p>
+      </div>
+      <ol class="process">
+        {process.map((step) => (
+          <li class="process__step">
+            <span class="process__n">{step.n}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ==================== CAPABILITIES (DESIGN+BUILD) ============= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Design + construction</p>
+        <h2>Everything your build needs, coordinated</h2>
+        <p>Because design, engineering, approvals and construction sit in one team, decisions made early carry through cleanly to the site.</p>
+      </div>
+      <div class="grid grid-4">
+        {capabilities.map((c) => (
+          <div class="capability">
+            <span class="capability__icon"><Icon name={c.icon} size={24} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIALS / TRUST ================== -->
+  {testimonials.length > 0 && (
+    <section class="section section--paper2">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Client voices</p>
+          <h2>What our clients say</h2>
+        </div>
+        <div class="grid grid-3">
+          {testimonials.map((t) => <Testimonial {...t} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ========================= SERVICE AREAS ===================== -->
+  <section class="section" id="areas">
+    <div class="container areas">
+      <div class="areas__copy">
+        <p class="eyebrow">Where we work</p>
+        <h2>Serving Thiruvananthapuram &amp; across Kerala</h2>
+        <p class="lead">Arcfinity works with families and businesses throughout the region. If your plot is nearby and not listed, just ask.</p>
+        <a href="/service-areas" class="arrow-link">See service areas <Icon name="arrow" size={18} /></a>
+      </div>
+      <ul class="areas__list">
+        {site.serviceAreas.map((a) => (
+          <li><Icon name="pin" size={16} /> {a.name}{a.primary ? ' (Primary)' : ''}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================= FAQ =========================== -->
+  <section class="section section--paper2">
+    <div class="container container--narrow">
+      <div class="section-head">
+        <p class="eyebrow">Questions</p>
+        <h2>Frequently asked</h2>
+      </div>
+      <Faq items={homeFaqs} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; }
+  .hero__lines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(50rem 40rem at 88% -20%, rgba(180,85,45,0.22), transparent 60%),
+      repeating-linear-gradient(90deg, transparent 0 79px, rgba(255,255,255,0.028) 79px 80px);
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+  .hero__title { font-size: var(--step-5); line-height: 1.02; margin-top: 1rem; }
+  .hero__lead { margin-top: 1.4rem; max-width: 46ch; color: var(--on-dark-muted); font-size: var(--step-1); }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2rem; }
+  .hero__trust {
+    list-style: none; margin: 2.2rem 0 0; padding: 0;
+    display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem;
+  }
+  .hero__trust li { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--on-dark-muted); font-size: 0.9rem; }
+  .hero__trust :global(svg) { color: var(--brass); flex: none; }
+  .hero__media { position: relative; }
+  .hero__ph { border-radius: var(--radius-lg); box-shadow: var(--shadow-2); max-width: 26rem; margin-inline: auto; }
+
+  @media (min-width: 900px) {
+    .hero__inner { grid-template-columns: 1.15fr 0.85fr; gap: 3.5rem; }
+  }
+
+  /* ---------- Section heads with a row ---------- */
+  .section-head--row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end; justify-content: space-between; max-width: none; }
+  .section-cta { margin-top: 2rem; }
+
+  /* ---------- Why ---------- */
+  .why { display: grid; gap: 2.5rem; }
+  .why__intro .arrow-link { margin-top: 1.4rem; }
+  .why__grid { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
+  .why__card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.4rem; }
+  .why__icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.8rem; height: 2.8rem; border-radius: var(--radius);
+    background: var(--clay-tint); color: var(--clay-deep); margin-bottom: 0.9rem;
+  }
+  .why__card h3 { font-size: var(--step-1); margin-bottom: 0.4rem; }
+  .why__card p { color: var(--muted); font-size: 0.96rem; }
+  @media (min-width: 720px) { .why__grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 980px) { .why { grid-template-columns: 0.9fr 1.4fr; gap: 3.5rem; align-items: start; } }
+
+  /* ---------- Sample note ---------- */
+  .sample-note {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1.5rem; padding: 0.7rem 1rem;
+    background: var(--clay-tint); color: var(--clay-deep);
+    border-radius: var(--radius); font-size: 0.88rem;
+  }
+  .sample-note :global(svg) { flex: none; }
+
+  /* ---------- Process ---------- */
+  .process { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: step; }
+  .process__step { display: flex; gap: 1.5rem; padding: 1.6rem 0; border-top: 1px solid var(--on-dark-line); }
+  .process__step:last-child { border-bottom: 1px solid var(--on-dark-line); }
+  .process__n { font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; color: var(--brass); flex: none; min-width: 2.5rem; }
+  .process__step h3 { font-size: var(--step-1); color: var(--on-dark); }
+  .process__step p { color: var(--on-dark-muted); margin-top: 0.3rem; max-width: 60ch; }
+
+  /* ---------- Capabilities ---------- */
+  .capability { padding: 1.3rem 1.1rem; border-left: 2px solid var(--line-strong); }
+  .capability__icon { display: inline-flex; color: var(--clay); margin-bottom: 0.7rem; }
+  .capability h3 { font-size: var(--step-1); margin-bottom: 0.35rem; }
+  .capability p { color: var(--muted); font-size: 0.94rem; }
+
+  /* ---------- Areas ---------- */
+  .areas { display: grid; gap: 2rem; align-items: center; }
+  .areas__copy .arrow-link { margin-top: 1.2rem; }
+  .areas__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .areas__list li { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-weight: 500; padding: 0.9rem 1rem; background: var(--paper-2); border-radius: var(--radius); }
+  .areas__list :global(svg) { color: var(--clay); flex: none; }
+  @media (min-width: 860px) { .areas { grid-template-columns: 1fr 1fr; gap: 3.5rem; } }
+</style>

@@ -1,0 +1,27 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  quote: string;
+  name: string;
+  detail?: string; // e.g. "Homeowner, Neyyattinkara"
+}
+const { quote, name, detail } = Astro.props;
+---
+<figure class="testimonial card">
+  <Icon name="quote" size={26} class="testimonial__mark" />
+  <blockquote>{quote}</blockquote>
+  <figcaption>
+    <span class="testimonial__name">{name}</span>
+    {detail && <span class="testimonial__detail">{detail}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .testimonial { display: flex; flex-direction: column; height: 100%; }
+  .testimonial__mark { color: var(--clay); opacity: 0.5; margin-bottom: 0.5rem; }
+  .testimonial blockquote { font-size: var(--step-1); line-height: 1.5; color: var(--ink); flex: 1; }
+  .testimonial figcaption { margin-top: 1.2rem; display: flex; flex-direction: column; }
+  .testimonial__name { font-family: var(--font-display); font-weight: 600; }
+  .testimonial__detail { color: var(--muted); font-size: 0.9rem; }
+</style>

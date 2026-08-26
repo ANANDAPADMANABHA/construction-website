@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { breadcrumbSchema } from '../../utils/seo';
+
+const services = (await getCollection('services')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services' },
+];
+---
+<BaseLayout
+  title="Construction & Design Services"
+  description="Arcfinity's construction and design services in Thiruvananthapuram and Kerala — house construction, commercial construction, renovation, interiors, 2D plans, 3D elevations, building permits and MEP drawings."
+  path="/services"
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    eyebrow="Services"
+    title="Construction & design services in Kerala"
+    intro="One accountable team for every stage of your build — from the first floor plan to a finished, handed-over home or commercial space."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3">
+        {services.map((s) => (
+          <ServiceCard
+            slug={s.id}
+            title={s.data.summary ? s.data.title.replace(' in Thiruvananthapuram', '') : s.data.title}
+            summary={s.data.summary}
+            icon={s.data.icon}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

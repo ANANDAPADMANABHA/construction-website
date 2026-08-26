@@ -1,0 +1,43 @@
+---
+/**
+ * Arcfinity logo. Inline SVG wordmark — the mark fuses an architectural arc
+ * with an infinity loop. Uses currentColor so it inherits light/dark context.
+ * `variant="mark"` renders only the symbol.
+ */
+interface Props {
+  variant?: 'full' | 'mark';
+  class?: string;
+}
+const { variant = 'full', class: className = '' } = Astro.props;
+---
+{
+  variant === 'mark' ? (
+    <svg class={`logo-mark ${className}`} width="34" height="28" viewBox="0 0 34 28" fill="none" role="img" aria-label="Arcfinity">
+      <path d="M2 24C2 12 8.5 4 17 4s15 8 15 20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M9 24c0-6 3.6-10 8-10s8 4 8 10" stroke="var(--clay)" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+  ) : (
+    <span class={`logo ${className}`}>
+      <svg class="logo__mark" width="30" height="26" viewBox="0 0 34 28" fill="none" aria-hidden="true">
+        <path d="M2 24C2 12 8.5 4 17 4s15 8 15 20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M9 24c0-6 3.6-10 8-10s8 4 8 10" stroke="var(--clay)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span class="logo__word">Arc<span class="logo__word-accent">finity</span></span>
+    </span>
+  )
+}
+
+<style>
+  .logo { display: inline-flex; align-items: center; gap: 0.55rem; }
+  .logo__mark { flex: none; }
+  .logo__word {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.4rem;
+    letter-spacing: -0.03em;
+    color: currentColor;
+    line-height: 1;
+  }
+  .logo__word-accent { color: var(--clay); }
+  .logo-mark { display: block; }
+</style>
