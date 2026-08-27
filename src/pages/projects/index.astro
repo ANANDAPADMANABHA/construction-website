@@ -49,7 +49,8 @@ const crumbs = [
         {projects.map((p) => (
           <div class="project-item" data-category={p.data.category}>
             <ProjectCard slug={p.id} title={p.data.title} category={p.data.category}
-              location={p.data.location} area={p.data.area} status={p.data.status} seed={p.data.seed} />
+              location={p.data.location} area={p.data.area} status={p.data.status} seed={p.data.seed}
+              image={p.data.images[0]?.src} imageAlt={p.data.images[0]?.alt} />
           </div>
         ))}
       </div>

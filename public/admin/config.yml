@@ -24,6 +24,27 @@ public_folder: "/images/uploads"
 publish_mode: simple
 
 collections:
+  # ──────────────────────────── SITE SETTINGS ───────────────────────────
+  - name: settings
+    label: Site Settings
+    description: "Editable pieces of the site, like the homepage hero image."
+    files:
+      - name: homepage
+        label: "Homepage"
+        file: "src/data/home.json"
+        description: "The big image beside the homepage headline."
+        fields:
+          - label: "Hero image"
+            name: heroImage
+            widget: image
+            required: false
+            hint: "The large image on the right of the homepage headline. Leave empty to show the placeholder sketch."
+          - label: "Hero image — alt text"
+            name: heroImageAlt
+            widget: string
+            required: false
+            hint: "Describe the image for accessibility & SEO, e.g. 'Modern villa built by Arcfinity in Trivandrum'."
+
   # ────────────────────────────── PROJECTS ──────────────────────────────
   - name: projects
     label: Projects

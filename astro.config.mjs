@@ -15,7 +15,6 @@ export default defineConfig({
   // /admin doesn't auto-resolve to that file, so redirect it explicitly.
   redirects: {
     '/admin': '/admin/index.html',
-    '/admin/': '/admin/index.html',
   },
   build: {
     // Clean, extension-less URLs: /about instead of /about/index.html
