@@ -7,7 +7,6 @@ import Testimonial from '../components/Testimonial.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
-import Placeholder from '../components/Placeholder.astro';
 import { site, links } from '../config/site';
 import { services as serviceMeta } from '../config/nav';
 import { testimonials, commitments } from '../config/testimonials';
@@ -60,8 +59,26 @@ const description =
   schema={[faqSchema(homeFaqs.map((f) => ({ q: f.q, a: f.a.replace(/<[^>]+>/g, '') })))]}
 >
   <!-- ============================ HERO ============================ -->
-  <section class="hero section--dark">
-    <div class="hero__lines" aria-hidden="true"></div>
+  <section class={`hero section--dark ${home.heroImage ? 'hero--image' : ''}`}>
+    {
+      home.heroImage ? (
+        <div class="hero__bg" aria-hidden="true">
+          <img
+            src={home.heroImage}
+            alt=""
+            class="hero__bg-img"
+            width="1600"
+            height="1000"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="hero__scrim"></div>
+        </div>
+      ) : (
+        <div class="hero__lines" aria-hidden="true"></div>
+      )
+    }
     <div class="container hero__inner">
       <div class="hero__copy">
         <p class="eyebrow">Construction &amp; Design · Thiruvananthapuram, Kerala</p>
@@ -80,24 +97,6 @@ const description =
             <li><Icon name={t.icon} size={18} /> {t.label}</li>
           ))}
         </ul>
-      </div>
-      <div class="hero__media">
-        {
-          home.heroImage ? (
-            <img
-              src={home.heroImage}
-              alt={home.heroImageAlt || 'Arcfinity — a completed project'}
-              class="hero__img"
-              width="520"
-              height="650"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-            />
-          ) : (
-            <Placeholder seed={2} ratio="4/5" label="Architectural visualisation" class="hero__ph" />
-          )
-        }
       </div>
     </div>
   </section>
@@ -263,36 +262,50 @@ const description =
 
 <style>
   /* ---------- Hero ---------- */
-  .hero { position: relative; overflow: hidden; }
+  .hero { position: relative; overflow: hidden; isolation: isolate; }
   .hero__lines {
     position: absolute; inset: 0; pointer-events: none;
     background-image:
       radial-gradient(50rem 40rem at 88% -20%, rgba(180,85,45,0.22), transparent 60%),
       repeating-linear-gradient(90deg, transparent 0 79px, rgba(255,255,255,0.028) 79px 80px);
   }
+
+  /* Full-bleed background image + readability scrim */
+  .hero__bg { position: absolute; inset: 0; z-index: 0; }
+  .hero__bg-img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .hero__scrim {
+    position: absolute; inset: 0;
+    /* Darker where the text sits (left + bottom), lighter over the image (right) */
+    background:
+      linear-gradient(90deg, rgba(13,14,17,0.94) 0%, rgba(13,14,17,0.78) 38%, rgba(13,14,17,0.42) 72%, rgba(13,14,17,0.30) 100%),
+      linear-gradient(180deg, rgba(13,14,17,0.35) 0%, transparent 35%, transparent 55%, rgba(13,14,17,0.55) 100%);
+  }
+
   .hero__inner {
     position: relative;
+    z-index: 1;
     display: grid;
     gap: 2.5rem;
     align-items: center;
     padding-block: clamp(3rem, 8vw, 6rem);
   }
+  /* When a background image is set, give the hero real presence and center text */
+  .hero--image .hero__inner {
+    min-height: min(82svh, 760px);
+  }
+  .hero__copy { max-width: 44rem; }
+
   .hero__title { font-size: var(--step-5); line-height: 1.02; margin-top: 1rem; }
   .hero__lead { margin-top: 1.4rem; max-width: 46ch; color: var(--on-dark-muted); font-size: var(--step-1); }
+  .hero--image .hero__lead { color: #e7e3db; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2rem; }
   .hero__trust {
     list-style: none; margin: 2.2rem 0 0; padding: 0;
     display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem;
   }
   .hero__trust li { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--on-dark-muted); font-size: 0.9rem; }
+  .hero--image .hero__trust li { color: #d7d3ca; }
   .hero__trust :global(svg) { color: var(--brass); flex: none; }
-  .hero__media { position: relative; }
-  .hero__ph { border-radius: var(--radius-lg); box-shadow: var(--shadow-2); max-width: 26rem; margin-inline: auto; }
-  .hero__img { width: 100%; max-width: 26rem; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-2); margin-inline: auto; }
-
-  @media (min-width: 900px) {
-    .hero__inner { grid-template-columns: 1.15fr 0.85fr; gap: 3.5rem; }
-  }
 
   /* ---------- Section heads with a row ---------- */
   .section-head--row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end; justify-content: space-between; max-width: none; }

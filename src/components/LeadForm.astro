@@ -17,11 +17,15 @@ import { projectTypes } from '../config/nav';
 import Icon from './Icon.astro';
 
 interface Props {
-  /** Real backend URL. Empty string => WhatsApp fallback. */
+  /**
+   * Backend URL that receives the lead as JSON. Defaults to the Netlify
+   * function at /api/lead, which forwards it securely to the CRM.
+   * Pass endpoint="" to force the WhatsApp-only fallback (e.g. local testing).
+   */
   endpoint?: string;
   compact?: boolean;
 }
-const { endpoint = '', compact = false } = Astro.props;
+const { endpoint = '/api/lead', compact = false } = Astro.props;
 const wa = site.contact.whatsapp;
 ---
 <form
@@ -184,40 +188,65 @@ const wa = site.contact.whatsapp;
       }
 
       const data = new FormData(form);
+      const val = (k: string) => (data.get(k) ?? '').toString();
 
-      // Real backend configured → POST it.
-      if (endpoint) {
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            body: data,
-            headers: { Accept: 'application/json' },
-          });
-          if (!res.ok) throw new Error('Bad response');
-          form.reset();
-          tsInput.value = String(Date.now());
-          showStatus("Thank you — your enquiry has been sent. We'll be in touch shortly.", true);
-          window.location.assign('/thank-you');
-        } catch {
-          showStatus('Something went wrong. Please WhatsApp or call us instead.', false);
-        }
+      // WhatsApp fallback — used when there is no backend, or when the CRM
+      // submission fails, so a lead is never lost.
+      const openWhatsApp = () => {
+        const lines = [
+          '*New enquiry from Arcfinity website*',
+          `Name: ${val('name')}`,
+          `Phone: ${val('phone')}`,
+          val('email') ? `Email: ${val('email')}` : '',
+          val('location') ? `Location: ${val('location')}` : '',
+          val('project_type') ? `Project: ${val('project_type')}` : '',
+          val('area') ? `Area: ${val('area')} sq.ft` : '',
+          val('message') ? `Message: ${val('message')}` : '',
+        ].filter(Boolean);
+        const url = `https://wa.me/${wa}?text=${encodeURIComponent(lines.join('\n'))}`;
+        window.open(url, '_blank', 'noopener');
+      };
+
+      // No backend configured → straight to WhatsApp.
+      if (!endpoint) {
+        showStatus('Opening WhatsApp to send your enquiry…', true);
+        openWhatsApp();
         return;
       }
 
-      // No backend → open a prefilled WhatsApp chat (works on any static host).
-      const lines = [
-        '*New enquiry from Arcfinity website*',
-        `Name: ${data.get('name')}`,
-        `Phone: ${data.get('phone')}`,
-        data.get('email') ? `Email: ${data.get('email')}` : '',
-        data.get('location') ? `Location: ${data.get('location')}` : '',
-        data.get('project_type') ? `Project: ${data.get('project_type')}` : '',
-        data.get('area') ? `Area: ${data.get('area')} sq.ft` : '',
-        data.get('message') ? `Message: ${data.get('message')}` : '',
-      ].filter(Boolean);
-      const url = `https://wa.me/${wa}?text=${encodeURIComponent(lines.join('\n'))}`;
-      showStatus('Opening WhatsApp to send your enquiry…', true);
-      window.open(url, '_blank', 'noopener');
+      // Send the lead to the secure function (which forwards it to the CRM).
+      const payload = {
+        name: val('name'),
+        phone: val('phone'),
+        email: val('email'),
+        location: val('location'),
+        project_type: val('project_type'),
+        area: val('area'),
+        message: val('message'),
+        company: val('company'), // honeypot (server double-checks)
+      };
+
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+      if (submitBtn) submitBtn.disabled = true;
+      showStatus('Sending your enquiry…', true);
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Bad response');
+        form.reset();
+        tsInput.value = String(Date.now());
+        window.location.assign('/thank-you');
+      } catch {
+        // CRM/function unreachable → don't lose the lead: fall back to WhatsApp.
+        showStatus("Couldn't reach our server — opening WhatsApp so your enquiry still reaches us…", false);
+        openWhatsApp();
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
   }
 </script>

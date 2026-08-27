@@ -378,18 +378,60 @@ hr {
 }
 
 /* ----------------------------------------------------------------------- */
-/* Subtle entrance animation (CSS only, no library)                         */
+/* Scroll-reveal (CSS only — no JavaScript, no library)                     */
 /* ----------------------------------------------------------------------- */
-@media (prefers-reduced-motion: no-preference) {
-  .reveal {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: reveal-in 0.7s var(--ease) forwards;
-    animation-timeline: view();
-    animation-range: entry 0% cover 22%;
-  }
-  @keyframes reveal-in {
-    to { opacity: 1; transform: none; }
+/* Content gently fades + rises as it scrolls into view. Implemented with
+   native CSS scroll-driven animations, which run on the compositor and cost
+   essentially nothing at load time.
+
+   Everything is wrapped in @supports so browsers WITHOUT scroll-timeline
+   support simply show all content immediately — there is never any risk of
+   hidden content, and no layout shift. Reduced-motion users are excluded. */
+
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-soft {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Section intros + editorial blocks */
+    .reveal,
+    .section-head,
+    .why__intro,
+    .areas__copy,
+    .about-story .prose,
+    .about-media {
+      animation: reveal-in 0.7s var(--ease) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 24%;
+    }
+
+    /* Cards, tiles and repeating items — a touch quicker/tighter */
+    .card,
+    .service-card,
+    .project-card,
+    .why__card,
+    .capability,
+    .process__step,
+    .mv__card,
+    .value,
+    .commit,
+    .area-card,
+    .testimonial,
+    .method,
+    .feature,
+    .post-card,
+    .areas__list li {
+      animation: reveal-soft 0.6s var(--ease) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+    }
   }
 }
 
