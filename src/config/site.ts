@@ -45,10 +45,10 @@ export const site = {
   // ── Contact (ALL PLACEHOLDERS — replace before launch) ────────────────
   contact: {
     // Store phone in international format for tel: links and WhatsApp.
-    phoneDisplay: '+91 00000 00000', // PLACEHOLDER
-    phoneE164: '+910000000000', // PLACEHOLDER — used for tel: and wa.me
+    phoneDisplay: '+91 73062 21165',
+    phoneE164: '+917306221165', // used for tel: links
     // WhatsApp number in wa.me format (country code + number, no +, no spaces).
-    whatsapp: '910000000000', // PLACEHOLDER
+    whatsapp: '917306221165',
     email: 'hello@arcfinity.in', // PLACEHOLDER
     // Physical address / office. If the business is service-area only (no
     // storefront), leave streetAddress blank and rely on `serviceAreaOnly`.

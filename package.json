@@ -6,15 +6,19 @@
   "description": "Arcfinity — construction & design company website (Thiruvananthapuram, Kerala).",
   "scripts": {
     "dev": "astro dev",
+    "dev:netlify": "netlify dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.6.1",
     "@astrojs/sitemap": "^3.3.0",
     "@fontsource-variable/space-grotesk": "^5.2.5",
+    "astro": "^5.6.1",
     "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^26.2.0"
   }
 }

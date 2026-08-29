@@ -41,4 +41,14 @@ export default defineConfig({
     responsiveStyles: true,
   },
   compressHTML: true,
+  vite: {
+    server: {
+      // DEV ONLY: routes /api/lead to the local lead-dev-server (see
+      // scripts/lead-dev-server.mjs) so the form can be tested in the browser
+      // without the Netlify CLI. Ignored in production builds.
+      proxy: {
+        '/api/lead': 'http://localhost:8787',
+      },
+    },
+  },
 });
