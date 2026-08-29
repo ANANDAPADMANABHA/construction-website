@@ -10,7 +10,7 @@
 # files on your own computer with no login.
 backend:
   name: github
-  repo: your-github-user/arcfinity-website   # ← PLACEHOLDER: set to your repo
+  repo: ANANDAPADMANABHA/construction-website
   branch: main
 
 # Enables no-login local editing (npm run dev → open /admin/ in Chrome/Edge).
