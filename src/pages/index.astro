@@ -431,7 +431,10 @@ const description =
   .insta__item:hover .insta__overlay,
   .insta__item:focus-visible .insta__overlay { opacity: 1; background: rgba(22, 24, 29, 0.35); }
   .insta__cta { text-align: center; margin-top: clamp(1.5rem, 4vw, 2.25rem); }
-  @media (min-width: 700px) {
+  @media (min-width: 640px) {
     .insta__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .insta__grid { grid-template-columns: repeat(4, 1fr); }
   }
 </style>
