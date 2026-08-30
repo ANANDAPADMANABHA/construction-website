@@ -59,9 +59,10 @@ export const site = {
       postalCode: '695000', // PLACEHOLDER
       country: 'IN',
     },
-    // Set true if Arcfinity serves clients at their sites without a public
-    // storefront. This changes how LocalBusiness structured data is emitted.
-    serviceAreaOnly: false,
+    // Service-area business: we operate from Ambalamukku (Trivandrum) but don't
+    // receive clients there, so the public street address is hidden and we lead
+    // with service areas — matching the Google Business Profile setup.
+    serviceAreaOnly: true,
     // Google Business Profile short link / Maps place link. PLACEHOLDER.
     googleBusinessProfile: 'https://maps.google.com/?q=Arcfinity+Thiruvananthapuram',
     // A "Get directions" deep link (place URL). PLACEHOLDER.
