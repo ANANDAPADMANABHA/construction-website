@@ -1,0 +1,24 @@
+{
+  "enabled": true,
+  "handle": "arcfinity",
+  "profileUrl": "https://instagram.com/arcfinity",
+  "heading": "Follow our work on Instagram",
+  "intro": "Behind-the-scenes moments, project progress and finished spaces — from our site to yours.",
+  "posts": [
+    {
+      "image": "/images/uploads/Exterior-Rendering-Works-1024x585-1.jpg",
+      "link": "https://instagram.com/arcfinity",
+      "caption": "Exterior rendering of a modern home"
+    },
+    {
+      "image": "/images/uploads/68414168994de-3d-rendering-modern-homes.webp",
+      "link": "https://instagram.com/arcfinity",
+      "caption": "3D rendering of a contemporary residence"
+    },
+    {
+      "image": "/images/uploads/3d-exterior-rendering-architectural-illustration.jpg",
+      "link": "https://instagram.com/arcfinity",
+      "caption": "3D elevation design"
+    }
+  ]
+}

@@ -45,6 +45,27 @@ collections:
             required: false
             hint: "Describe the image for accessibility & SEO, e.g. 'Modern villa built by Arcfinity in Trivandrum'."
 
+      - name: instagram
+        label: "Instagram feed"
+        file: "src/data/instagram.json"
+        description: "The Instagram grid on the homepage — pick which posts to show."
+        fields:
+          - { label: "Show the Instagram section", name: enabled, widget: boolean, default: true }
+          - { label: "Handle (without @)", name: handle, widget: string, hint: "e.g. arcfinity" }
+          - { label: "Profile URL", name: profileUrl, widget: string, hint: "e.g. https://instagram.com/arcfinity" }
+          - { label: "Heading", name: heading, widget: string }
+          - { label: "Intro text", name: intro, widget: text, required: false }
+          - label: "Posts"
+            name: posts
+            widget: list
+            label_singular: "Post"
+            summary: "{{fields.caption}}"
+            hint: "Add a few posts. Upload the image, and paste the link to that post on Instagram."
+            fields:
+              - { label: "Image", name: image, widget: image }
+              - { label: "Link to the Instagram post", name: link, widget: string, hint: "Open the post on Instagram, copy its URL, paste it here." }
+              - { label: "Caption / alt text", name: caption, widget: string, required: false }
+
   # ────────────────────────────── PROJECTS ──────────────────────────────
   - name: projects
     label: Projects
