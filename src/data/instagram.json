@@ -1,23 +1,23 @@
 {
   "enabled": true,
-  "handle": "arcfinity",
-  "profileUrl": "https://instagram.com/arcfinity",
+  "handle": "gk_constructions_",
+  "profileUrl": "https://instagram.com/gk_constructions_",
   "heading": "Follow our work on Instagram",
   "intro": "Behind-the-scenes moments, project progress and finished spaces — from our site to yours.",
   "posts": [
     {
-      "image": "/images/uploads/Exterior-Rendering-Works-1024x585-1.jpg",
-      "link": "https://instagram.com/arcfinity",
+      "image": "/images/uploads/Image-81091.jpg",
+      "link": "https://www.instagram.com/reel/Dbh9w8ARMdV/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "caption": "Exterior rendering of a modern home"
     },
     {
-      "image": "/images/uploads/68414168994de-3d-rendering-modern-homes.webp",
-      "link": "https://instagram.com/arcfinity",
+      "image": "/images/uploads/Image-81091.jpg",
+      "link": "https://www.instagram.com/reel/DcLnfimJsPC/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "caption": "3D rendering of a contemporary residence"
     },
     {
-      "image": "/images/uploads/3d-exterior-rendering-architectural-illustration.jpg",
-      "link": "https://instagram.com/arcfinity",
+      "image": "/images/uploads/Image-81091.jpg",
+      "link": "https://www.instagram.com/reel/DcLnfimJsPC/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "caption": "3D elevation design"
     }
   ]
